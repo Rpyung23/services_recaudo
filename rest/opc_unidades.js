@@ -5,39 +5,15 @@ let {query_all_unidades,query_salidas_unidad_fechas,query_tarjeta_salida_d,query
 
 /**Metodo get**/
 
-/** Obtiene todas las unidades **/
-app_express.get("/unidades",function (req,res)
-{
 
-    query_all_unidades( (error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json({
-                status_code:400,
-                datos:error
-            })
-        }else
-            {
-                res.status(200).json({
-                    status_code:200,
-                    datos:datos
-                })
-            }
-    })
-
-
-
-})
-
-app_express.get("/salidas",function(req,res)
+app_express.get("/salidas/:id_bus/:fecha/:horaI/:horaF",function(req,res)
 {
     var objReq =
         {
-            id_bus:req.body.id_bus,
-            fecha:req.body.fecha,
-            horaI:req.body.horaI,
-            horaF:req.body.horaF
+            id_bus:req.params.id_bus,
+            fecha:req.params.fecha,
+            horaI:req.params.horaI,
+            horaF:req.params.horaF
         }
     //console.log(objReq)
     query_salidas_unidad_fechas(objReq.id_bus,objReq.fecha,objReq.horaI,objReq.horaF,(error,datos)=>
@@ -67,9 +43,9 @@ app_express.get("/salidas",function(req,res)
     })
 })
 
-app_express.get('/tarjeta',function(req,res)
+app_express.get('/tarjeta/:tarjeta',function(req,res)
 {
-    query_tarjeta_salida_d(req.body.id_salida,(error,datos)=>
+    query_tarjeta_salida_d(req.params.tarjeta,(error,datos)=>
     {
         if(error)
         {
@@ -96,9 +72,16 @@ app_express.get('/tarjeta',function(req,res)
     })
 })
 
-app_express.get('/recorrido',function(req,res)
+app_express.get('/recorrido/:bus/:fecha/:horaI/:horaF',function(req,res)
 {
-    query_recorrido_bus(12,'2021-03-12','05:00','23:59',(error,datos)=>
+    var obj =
+        {
+            bus:req.params.bus,
+            fecha:req.params.fecha,
+            horaI:req.params.horaI,
+            horaF:req.params.horaF
+        }
+    query_recorrido_bus(obj.bus,obj.fecha,obj.horaI,obj.horaF,(error,datos)=>
     {
         if(error)
         {
