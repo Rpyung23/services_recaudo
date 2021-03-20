@@ -18,7 +18,7 @@ app_express.get("/unidades",function (req,res)
         {
             res.status(200).json({
                 status_code:400,
-                datos:error
+                datos:error.sqlMessage
             })
         }else
         {
@@ -33,5 +33,8 @@ app_express.get("/unidades",function (req,res)
 
 })
 
+app_express.get("/salidas_unidad/:unidad",function(req,res)
+{
 
+})
 module.exports = app_express

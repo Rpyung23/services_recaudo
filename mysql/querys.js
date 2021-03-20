@@ -1,5 +1,5 @@
 let mysql = require("mysql")
-let {getFecha_format} = require("../utils/utils")
+let {getFecha_format,getHora} = require("../utils/utils")
 
 
 let objConn =
@@ -13,10 +13,10 @@ let objConn =
 let conn = mysql.createConnection(objConn)
 
 conn.connect();/**CONECTO**/
-
+/***************** GLOBAL **********************************/
 let query_all_unidades = (callback) =>
-    {
-        conn.query("SELECT * from vehivulo as V where V.idEstaVehi = 1 and NumeSIMVehi is not null",function (error,results,fiels)
+{
+        conn.query("SELECT * from vehiculo as V where V.idEstaVehi = 1 and NumeSIMVehi is not null",function (error,results,fiels)
         {
             if(error)
             {
@@ -31,7 +31,7 @@ let query_all_unidades = (callback) =>
                         var objUnidades =
                             {
                                 id_unidad:results[i].CodiVehi,
-                                id_observador:results[i].PlacVehi
+                                placa:results[i].PlacVehi
                             }
 
                         datos_unidades[i]=objUnidades;
@@ -45,6 +45,89 @@ let query_all_unidades = (callback) =>
         })
     }
 
+let query_salidas_unidad_fechas_global = (id_bus,fechaI,fechaF,callback)=>
+{
+    let string_query = "select idSali_m,NumeTarjSali_m,HoraLlegProgSali_m,HoraSaliProgSali_m,DescRutaSali_m,NumeVuelSali_m from salida_m where CodiVehiSali_m = '"+id_bus+"' AND HoraLLegProgSali_m  between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59'"
+    console.log(string_query)
+    conn.query(string_query,function(error,results,fields)
+    {
+        //console.log(`${results}`)
+        if(error)
+        {
+            callback(error,null)
+        }else
+        {
+            let datos_salidas = []
+            for(let i=0;i<results.length;i++)
+            {
+
+                //console.log(obj)
+
+
+                let fechaLleg = getFecha_format(results[i].HoraLlegProgSali_m)
+                let fechaSali = getFecha_format(results[i].HoraSaliProgSali_m)
+
+                var obj =
+                    {
+                        llegada:fechaLleg,
+                        salida:fechaSali,
+                        id_salida:results[i].idSali_m,
+                        num_tarjeta_salida:results[i].NumeTarjSali_m,
+                        frecuencia:results[i].DescRutaSali_m,
+                        num_vuelta:results[i].NumeVuelSali_m
+
+                    }
+
+                datos_salidas[i] =  obj
+            }
+            callback(null,datos_salidas)
+        }
+    });
+}
+
+let query_salidas_fechas_global = (fechaI,fechaF,callback)=>
+{
+    let string_query = "select idSali_m,NumeTarjSali_m,HoraLlegProgSali_m,HoraSaliProgSali_m,DescRutaSali_m,NumeVuelSali_m from salida_m where  HoraLLegProgSali_m  between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59'"
+    console.log(string_query)
+    conn.query(string_query,function(error,results,fields)
+    {
+        //console.log(`${results}`)
+        if(error)
+        {
+            callback(error,null)
+        }else
+        {
+            let datos_salidas = []
+            for(let i=0;i<results.length;i++)
+            {
+
+                //console.log(obj)
+
+
+                let fechaLleg = getFecha_format(results[i].HoraLlegProgSali_m)
+                let fechaSali = getFecha_format(results[i].HoraSaliProgSali_m)
+
+                var obj =
+                    {
+                        llegada:fechaLleg,
+                        salida:fechaSali,
+                        id_salida:results[i].idSali_m,
+                        num_tarjeta_salida:results[i].NumeTarjSali_m,
+                        frecuencia:results[i].DescRutaSali_m,
+                        num_vuelta:results[i].NumeVuelSali_m
+
+                    }
+
+                datos_salidas[i] =  obj
+            }
+            callback(null,datos_salidas)
+        }
+    });
+}
+
+
+
+/**********************************************************/
 let query_salidas_unidad_fechas = (id_bus,fecha,horaI,horaF,callback)=>
 {
     let string_query = "select idSali_m,NumeTarjSali_m,HoraLlegProgSali_m,HoraSaliProgSali_m,DescRutaSali_m,NumeVuelSali_m from salida_m where CodiVehiSali_m = '"+id_bus+"' AND HoraLLegProgSali_m  between '"+fecha+" "+horaI+"' and '"+fecha+" "+horaF+"'"
@@ -83,12 +166,6 @@ console.log(string_query)
                callback(null,datos_salidas)
            }
     });
-}
-
-function getHora(fecha)
-{
-    var horas = new Date(fecha);
-    return (horas.getUTCHours() +":"+horas.getUTCMinutes()+":"+horas.getUTCSeconds())
 }
 
 let query_tarjeta_salida_d = (id_salida_m,callback)=>
@@ -346,10 +423,155 @@ let query_report_tarjeta_unidad_cp = (unidad,fechaIni,fechaFin,callback)=>
     })
 }
 
-//let query_report_consilado_vueltas =
+let query_report_consilado_vueltas = (fechaI,fechaF,callback)=>
+{
+    string_query = "select t1.CodiVehiSali_m,t1.idSali_m,t1.DescRutaSali_m,t1.NumeVuelSali_m,t1.HoraSaliProgSali_m," +
+        "sum(t2.PenaCtrlSali_d) TotalPenalidad from salida_m t1 inner join salida_d t2 " +
+        "on t1.idSali_m = t2.idSali_mSali_d where t1.HoraSaliProgSali_m " +
+        "between '"+fechaI+"' and '"+fechaF+"' and t1.EstaSali_m <> 4 " +
+        "and t2.isCtrlRefeSali_d = 0 and t2.PenaCtrlSali_d > 0\n" +
+        "group by t1.idSali_m,t1.CodiVehiSali_m,t1.NumeVuelSali_m " +
+        "order by t1.CodiVehiSali_m,t1.NumeVuelSali_m"
+    conn.query(string_query,function(error,results,fields)
+    {
+        if(error)
+        {
+            callback(error,null)
+        }else
+            {
+                let vector = []
+                for(let i = 0;i<results.length;i++)
+                {
+                    var obj =
+                        {
+                            unidad:results[i].CodiVehiSali_m,
+                            tarjeta:results[i].idSali_m,
+                            vuelta:results[i].NumeVuelSali_m,
+                            ruta:results[i].DescRutaSali_m,
+                            salida_h:getHora(results[i].HoraSaliProgSali_m),
+                            valor:results[i].TotalPenalidad
+
+                        }
+
+                    vector[i] = obj
+                }
+
+                callback(null,vector)
+            }
+    })
+}
+/** QUERY AUN NO VALIDA (EN REVICION)**/
+let query_velocidad_general = (velocidad,fecha,callback)=>
+{
+    var string_query = "select CodiVehiHistEven,FechHistEven FechaHistorial,FechHistEven HoraHistorial," +
+        "LatiHistEven,LongHistEven,RumbHistEven,VeloHistEven from historial_eventos where FechHistEven " +
+        "between '"+fecha+" 05:00:00' and '"+fecha+" 23:59:59' and VeloHistEven >= "+velocidad+" order by " +
+        "convert(CodiVehiHistEven, signed),FechHistEven Asc"
+    conn.query(string_query,function(error,results,fields)
+    {
+        if(error)
+        {
+            callback(error,null)
+        }else{
+            let datos = []
+            for(let i = 0;i<results.length;i++)
+            {
+                var obj = {
+                    unidad:results[i].CodiVehiHistEven,
+                    //tarjeta:results[i].,
+                    hora:getHora(results[i].FechHistEven),
+                    lat:results[i].LatiHistEven,
+                    lng:results[i].LongHistEven,
+                    grados:results[i].RumbHistEven,
+                    velocidad:results[i].VeloHistEven
+                }
+
+                datos[i] = obj
+            }
+        }
+    })
+}
+/***************************************/
+
+/**query conteo_marcaciones_tabla**/
+
+let query_unidades_conteo_marcaciones_tabla = (fecha,callback)=>
+{
+    var query_string = "SELECT CodiVehiSali_m,idSali_m,HoraSaliProgSali_m,conteo_control,t7.sin_marcar,LetraRutaSali_m,NumeVuelSali_m\n" +
+        "FROM (SELECT t1.CodiVehiSali_m,t1.idSali_m,t1.HoraSaliProgSali_m,COUNT(t1.idSali_m) conteo_control,t5.sin_marcar\n" +
+        "\t      ,LetraRutaSali_m,NumeVuelSali_m FROM salida_m t1\n" +
+        "INNER JOIN salida_d t2 ON t1.idSali_m = t2.idSali_mSali_d AND t1.EstaSali_m <> 4\n" +
+        "INNER JOIN vehiculo t6 ON t6.CodiVehi = t1.CodiVehiSali_m AND idEstaVehi = 1 and not (NumeSIMVehi is NULL)\n" +
+        "INNER JOIN (SELECT idSali_m,COUNT(idSali_m) sin_marcar FROM salida_m t3 INNER JOIN salida_d t4\n" +
+        "ON t3.idSali_m = t4.idSali_mSali_d\n" +
+        "AND t3.EstaSali_m <> 4 WHERE t3.HoraSaliProgSali_m BETWEEN '"+fecha+" 05:00:00' AND '"+fecha+" 23:59:59'\n" +
+        "AND ((t4.HoraMarcSali_d IS NULL) OR t4.HoraMarcSali_d = '1899-12-30 00:00:00')\n" +
+        "GROUP BY t3.idSali_m ) t5 ON t5.idSali_m = t1.idSali_m\n" +
+        "WHERE t1.HoraSaliProgSali_m BETWEEN '"+fecha+" 05:00:00' AND '"+fecha+" 23:59:59'\n" +
+        "GROUP BY t1.CodiVehiSali_m,t1.idSali_m,t1.EstaSali_m,t5.sin_marcar) t7\n" +
+        "WHERE (t7.conteo_control - t7.sin_marcar) > 0 order by CodiVehiSali_m"
+
+    conn.query(query_string,function(error,results,fiels)
+    {
+
+        if(error)
+        {
+            callback(error,null)
+        }else
+            {
+                let vector = []
+                for(let i = 0;i<results.length;i++)
+                {
+                    var obj = {
+                        vehiculo:results[i].CodiVehiSali_m,
+                        salida:results[i].idSali_m,
+                        hora:getHora(results[i].HoraSaliProgSali_m),
+                        conteo_control:results[i].conteo_control,
+                        sin_marcar:results[i].sin_marcar,
+                        ruta:results[i].LetraRutaSali_m,
+                        vuelta:results[i].NumeVuelSali_m
+                    }
+                    vector[i] = obj
+                }
+                callback(null,vector)
+            }
+    })
+}
+
+let query_unidades_conteo_marcaciones_pdf = (salida,callback)=>
+{
+    var query_string = "select SD.CodiCtrlSali_d,SD.isCtrlRefeSali_d,SD.HoraProgSali_d,SD.HoraMarcSali_d," +
+        "SD.FaltSali_d,SD.PenaCtrlSali_d from uambatena.salida_d as SD " +
+        "where idSali_mSali_d = "+salida
+    conn.query(query_string,function(error,results,fields)
+    {
+        if(error)
+        {
+            callback(error,null)
+        }else
+            {
+                let vector = []
+                for(let i = 0;i<results.length;i++)
+                {
+                    var obj = {
+                        relog:results[i].CodiCtrlSali_d,
+                        hora_prog:getHora(results[i].HoraProgSali_d),
+                        hora_marc:getHora(results[i].HoraMarcSali_d),
+                        referencia:results[i].isCtrlRefeSali_d,
+                        falta:results[i].FaltSali_d,
+                        valor:results[i].PenaCtrlSali_d
+                    }
+                    vector[i] = obj
+                }
+                callback(null,vector)
+            }
+    })
+}
 
 module.exports = {query_all_unidades,query_salidas_unidad_fechas
     ,query_tarjeta_salida_d,query_recorrido_bus,query_report_ant
     ,query_report_tarjeta_unidad_all_sp,query_report_tarjeta_unidad_all_cp
-    ,query_report_tarjeta_unidad_sp,query_report_tarjeta_unidad_cp}
+    ,query_report_tarjeta_unidad_sp,query_report_tarjeta_unidad_cp
+    ,query_report_consilado_vueltas,query_unidades_conteo_marcaciones_tabla,
+    query_unidades_conteo_marcaciones_pdf}
 
