@@ -12,161 +12,53 @@ let objConn =
 
 let conn = mysql.createConnection(objConn)
 
-conn.connect();/**CONECTO**/
-/***************** GLOBAL **********************************/
-let query_all_unidades = (callback) =>
+conn.connect(function(error)
 {
-        conn.query("SELECT * from vehiculo as V where V.idEstaVehi = 1 and NumeSIMVehi is not null",function (error,results,fiels)
-        {
-            if(error)
-            {
-                callback(error,null)
-            }else
-                {
+    if(error) throw error
+    console.log('CONNECTED AS ID '+conn.threadId)
+});
 
-                    let datos_unidades =[];
-
-                    for(let i =0;i<results.length;i++)
-                    {
-                        var objUnidades =
-                            {
-                                id_unidad:results[i].CodiVehi,
-                                placa:results[i].PlacVehi
-                            }
-
-                        datos_unidades[i]=objUnidades;
-                    }
-
-
-                    callback(null,datos_unidades)
-                }
-
-
-        })
-    }
-
-let query_salidas_unidad_fechas_global = (id_bus,fechaI,fechaF,callback)=>
-{
-    let string_query = "select idSali_m,NumeTarjSali_m,HoraLlegProgSali_m,HoraSaliProgSali_m,DescRutaSali_m,NumeVuelSali_m from salida_m where CodiVehiSali_m = '"+id_bus+"' AND HoraLLegProgSali_m  between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59'"
-    console.log(string_query)
-    conn.query(string_query,function(error,results,fields)
-    {
-        //console.log(`${results}`)
-        if(error)
-        {
-            callback(error,null)
-        }else
-        {
-            let datos_salidas = []
-            for(let i=0;i<results.length;i++)
-            {
-
-                //console.log(obj)
-
-
-                let fechaLleg = getFecha_format(results[i].HoraLlegProgSali_m)
-                let fechaSali = getFecha_format(results[i].HoraSaliProgSali_m)
-
-                var obj =
-                    {
-                        llegada:fechaLleg,
-                        salida:fechaSali,
-                        id_salida:results[i].idSali_m,
-                        num_tarjeta_salida:results[i].NumeTarjSali_m,
-                        frecuencia:results[i].DescRutaSali_m,
-                        num_vuelta:results[i].NumeVuelSali_m
-
-                    }
-
-                datos_salidas[i] =  obj
-            }
-            callback(null,datos_salidas)
-        }
-    });
-}
-
-let query_salidas_fechas_global = (fechaI,fechaF,callback)=>
-{
-    let string_query = "select idSali_m,NumeTarjSali_m,HoraLlegProgSali_m,HoraSaliProgSali_m,DescRutaSali_m,NumeVuelSali_m from salida_m where  HoraLLegProgSali_m  between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59'"
-    console.log(string_query)
-    conn.query(string_query,function(error,results,fields)
-    {
-        //console.log(`${results}`)
-        if(error)
-        {
-            callback(error,null)
-        }else
-        {
-            let datos_salidas = []
-            for(let i=0;i<results.length;i++)
-            {
-
-                //console.log(obj)
-
-
-                let fechaLleg = getFecha_format(results[i].HoraLlegProgSali_m)
-                let fechaSali = getFecha_format(results[i].HoraSaliProgSali_m)
-
-                var obj =
-                    {
-                        llegada:fechaLleg,
-                        salida:fechaSali,
-                        id_salida:results[i].idSali_m,
-                        num_tarjeta_salida:results[i].NumeTarjSali_m,
-                        frecuencia:results[i].DescRutaSali_m,
-                        num_vuelta:results[i].NumeVuelSali_m
-
-                    }
-
-                datos_salidas[i] =  obj
-            }
-            callback(null,datos_salidas)
-        }
-    });
-}
-
-
-
-/**********************************************************/
-let query_salidas_unidad_fechas = (id_bus,fecha,horaI,horaF,callback)=>
+let query_salidas_unidad_fechas_horas = (id_bus,fecha,horaI,horaF,callback)=>
 {
     let string_query = "select idSali_m,NumeTarjSali_m,HoraLlegProgSali_m,HoraSaliProgSali_m,DescRutaSali_m,NumeVuelSali_m from salida_m where CodiVehiSali_m = '"+id_bus+"' AND HoraLLegProgSali_m  between '"+fecha+" "+horaI+"' and '"+fecha+" "+horaF+"'"
-console.log(string_query)
+    console.log(string_query)
     conn.query(string_query,function(error,results,fields)
     {
         //console.log(`${results}`)
-       if(error)
-       {
-           callback(error,null)
-       }else
-           {
-               let datos_salidas = []
-               for(let i=0;i<results.length;i++)
-               {
+        if(error)
+        {
+            callback(error,null)
+        }else
+        {
+            let datos_salidas = []
+            for(let i=0;i<results.length;i++)
+            {
 
-                   //console.log(obj)
+                //console.log(obj)
 
 
-                   let fechaLleg = getFecha_format(results[i].HoraLlegProgSali_m)
-                   let fechaSali = getFecha_format(results[i].HoraSaliProgSali_m)
+                let fechaLleg = getFecha_format(results[i].HoraLlegProgSali_m)
+                let fechaSali = getFecha_format(results[i].HoraSaliProgSali_m)
 
-                   var obj =
-                       {
-                           llegada:fechaLleg,
-                           salida:fechaSali,
-                           id_salida:results[i].idSali_m,
-                           num_tarjeta_salida:results[i].NumeTarjSali_m,
-                           frecuencia:results[i].DescRutaSali_m,
-                           num_vuelta:results[i].NumeVuelSali_m
+                var obj =
+                    {
+                        llegada:fechaLleg,
+                        salida:fechaSali,
+                        id_salida:results[i].idSali_m,
+                        num_tarjeta_salida:results[i].NumeTarjSali_m,
+                        frecuencia:results[i].DescRutaSali_m,
+                        num_vuelta:results[i].NumeVuelSali_m,
+                        velo:results[i].VeloMaxiSali_m
+                    }
 
-                       }
-
-                   datos_salidas[i] =  obj
-               }
-               callback(null,datos_salidas)
-           }
+                datos_salidas[i] =  obj
+            }
+            callback(null,datos_salidas)
+        }
     });
 }
+
+/**********************************************************/
 
 let query_tarjeta_salida_d = (id_salida_m,callback)=>
 {
@@ -568,7 +460,7 @@ let query_unidades_conteo_marcaciones_pdf = (salida,callback)=>
     })
 }
 
-module.exports = {query_all_unidades,query_salidas_unidad_fechas
+module.exports = {query_salidas_unidad_fechas_horas
     ,query_tarjeta_salida_d,query_recorrido_bus,query_report_ant
     ,query_report_tarjeta_unidad_all_sp,query_report_tarjeta_unidad_all_cp
     ,query_report_tarjeta_unidad_sp,query_report_tarjeta_unidad_cp

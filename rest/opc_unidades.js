@@ -1,49 +1,14 @@
 let express = require("express")
 let app_express = express()
 
-let {query_all_unidades,query_salidas_unidad_fechas,query_tarjeta_salida_d
+let {query_salidas_unidad_fechas_horas,query_tarjeta_salida_d
     ,query_recorrido_bus,query_unidades_conteo_marcaciones_tabla
     ,query_unidades_conteo_marcaciones_pdf} = require("../mysql/querys.js")
 
 /**Metodo get**/
 
 /***** Despacho - tarjeta ****** (REVISAR USO DE ESTA API -> PUEDO HACER USO DE GLOBAL) */
-app_express.get("/salidas/:id_bus/:fecha/:horaI/:horaF",function(req,res)
-{
-    var objReq =
-        {
-            id_bus:req.params.id_bus,
-            fecha:req.params.fecha,
-            horaI:req.params.horaI,
-            horaF:req.params.horaF
-        }
-    //console.log(objReq)
-    query_salidas_unidad_fechas(objReq.id_bus,objReq.fecha,objReq.horaI,objReq.horaF,(error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json(
-                {
-                    status:400,
-                    datos:error.sqlMessage
-                })
-        }else if(datos.length<=0)
-        {
-            res.status(200).json(
-                {
-                    status:300,
-                    datos:null
-                })
-        }else
-            {
-                res.status(200).json(
-                    {
-                        status:300,
-                        datos:datos
-                    })
-            }
-    })
-})
+
 
 app_express.get('/tarjeta/:tarjeta',function(req,res)
 {
