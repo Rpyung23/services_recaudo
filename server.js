@@ -20,12 +20,14 @@ app_express.use(body_parse.json())
 let opc_unidades = require("./rest/opc_unidades")
 let global = require("./rest/global")
 let opc_reportes = require("./rest/opc_reportes")
+let opc_velocidad = require("./rest/opc_velocidad")
 
 
 /** MIDDLE **/
 app_express.use(opc_unidades)
 app_express.use(global)
 app_express.use(opc_reportes)
+app_express.use(opc_velocidad)
 
 //run el servidor
 app_express.listen(process.env.PORT,()=>

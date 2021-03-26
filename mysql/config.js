@@ -54,16 +54,26 @@ let objConn = async(code)=>
             break;
     }
 
-    console.log(objC)
-    /*const promesa = new Promise((resolve,reject)=>
-    {
+    //console.log(objC)
 
-    })*/
     let conn = mysql.createConnection(objC)
 
-    conn = await conn.connect();
+    return new Promise(async(resolve,reject)=>
+    {
+        conn.connect(function(error)
+        {
+            if(error)
+            {
+                reject(error)
+            }else
+                {
+                    resolve(conn)
+                }
+        });
+    })
 
-    return conn
+
+
 }
 
 
