@@ -8,7 +8,12 @@ let body_parse = require("body-parser")
 let app_express = express()//inicializo el express
 
 /**  MIDDLE para el CORS **/
-app_express.use(cors())
+app_express.use(cors({
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+}))
 
 
 /**CONFIGURACION BODY PARSER**/

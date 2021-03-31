@@ -8,9 +8,6 @@ let {query_salidas_unidad_fechas_horas,query_tarjeta_salida_d
 
 /**Metodo get**/
 
-/***** Despacho - tarjeta ****** (REVISAR USO DE ESTA API -> PUEDO HACER USO DE GLOBAL) */
-
-
 app_express.get('/tarjeta/:code/:tarjeta',function(req,res)
 {
     query_tarjeta_salida_d(req.params.code,req.params.tarjeta,(error,datos)=>

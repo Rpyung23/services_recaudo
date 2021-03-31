@@ -510,9 +510,9 @@ let query_unidades_conteo_marcaciones_tabla = (code,fecha,callback)=>
     {
         let conn = resolve
 
-        var query_string = "SELECT CodiVehiSali_m,idSali_m,HoraSaliProgSali_m,conteo_control,t7.sin_marcar,LetraRutaSali_m,NumeVuelSali_m\n" +
-            "FROM (SELECT t1.CodiVehiSali_m,t1.idSali_m,t1.HoraSaliProgSali_m,COUNT(t1.idSali_m) conteo_control,t5.sin_marcar\n" +
-            "\t      ,LetraRutaSali_m,NumeVuelSali_m FROM salida_m t1\n" +
+        var query_string = "SELECT CodiVehiSali_m,idSali_m,HoraSaliProgSali_m,conteo_control,t7.sin_marcar,LetraRutaSali_m,NumeVuelSali_m,DescRutaSali_m \n" +
+            "FROM (SELECT t1.CodiVehiSali_m,t1.idSali_m,t1.HoraSaliProgSali_m,COUNT(t1.idSali_m) conteo_control,t5.sin_marcar,DescRutaSali_m " +
+            ",LetraRutaSali_m,NumeVuelSali_m FROM salida_m t1\n" +
             "INNER JOIN salida_d t2 ON t1.idSali_m = t2.idSali_mSali_d AND t1.EstaSali_m <> 4\n" +
             "INNER JOIN vehiculo t6 ON t6.CodiVehi = t1.CodiVehiSali_m AND idEstaVehi = 1 and not (NumeSIMVehi is NULL)\n" +
             "INNER JOIN (SELECT idSali_m,COUNT(idSali_m) sin_marcar FROM salida_m t3 INNER JOIN salida_d t4\n" +
@@ -542,7 +542,9 @@ let query_unidades_conteo_marcaciones_tabla = (code,fecha,callback)=>
                         conteo_control:results[i].conteo_control,
                         sin_marcar:results[i].sin_marcar,
                         ruta:results[i].LetraRutaSali_m,
-                        vuelta:results[i].NumeVuelSali_m
+                        vuelta:results[i].NumeVuelSali_m,
+                        fecha_hora:getFecha_format(results[i].HoraSaliProgSali_m),
+                        detalle_ruta:results[i].DescRutaSali_m
                     }
                     vector[i] = obj
                 }
@@ -635,10 +637,11 @@ let query_tarjetas_trabajadas_all = (code,fechaI,fechaF,callback)=>
                 {
                     var obj = {
                         salida:results[i].idSali_m,
+                        fecha:getFecha_dd_mm_yyyy(results[i].HoraSaliProgSali_m),
                         hora_sali:getHora(results[i].HoraSaliProgSali_m),
                         vehiculo:results[i].CodiVehiSali_m,
                         ruta:results[i].LetraRutaSali_m,
-                        frecuencia:results[i].DescFrec,
+                        detalle_ruta:results[i].DescFrec,
                         hora_lleg:getHora(results[i].HoraLlegProgSali_m),
                         num_vuelta:results[i].NumeVuelSali_m
                     }
@@ -683,10 +686,11 @@ let query_tarjetas_trabajadas_unidad = (code,unidad,fechaI,fechaF,callback)=>
                 {
                     var obj = {
                         salida:results[i].idSali_m,
+                        fecha:getFecha_dd_mm_yyyy(results[i].HoraSaliProgSali_m),
                         hora_sali:getHora(results[i].HoraSaliProgSali_m),
                         vehiculo:results[i].CodiVehiSali_m,
                         ruta:results[i].LetraRutaSali_m,
-                        frecuencia:results[i].DescFrec,
+                        detalle_ruta:results[i].DescFrec,
                         hora_lleg:getHora(results[i].HoraLlegProgSali_m),
                         num_vuelta:results[i].NumeVuelSali_m
                     }

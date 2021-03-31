@@ -51,21 +51,21 @@ app_express.get("/salidas_unidad_unidad/:code/:unidad/:fechaI/:fechaF",function(
         {
             res.status(200).json(
                 {
-                    status:400,
+                    status_code:400,
                     datos:error.sqlMessage
                 })
         }else if(datos.length<=0)
         {
             res.status(200).json(
                 {
-                    status:300,
+                    status_code:300,
                     datos:null
                 })
         }else
         {
             res.status(200).json(
                 {
-                    status:300,
+                    status_code:200,
                     datos:datos
                 })
         }

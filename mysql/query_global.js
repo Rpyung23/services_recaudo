@@ -121,7 +121,9 @@ let query_salidas_unidad_fechas_global = (code,id_bus,fechaI,fechaF,callback)=>
     {
         let conn = resolve
 
-        let string_query = "select idSali_m,NumeTarjSali_m,HoraLlegProgSali_m,HoraSaliProgSali_m,DescRutaSali_m,NumeVuelSali_m from salida_m where CodiVehiSali_m = '"+id_bus+"' AND HoraLLegProgSali_m  between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59'"
+        let string_query = "select idSali_m,NumeTarjSali_m,HoraLlegProgSali_m,HoraSaliProgSali_m,DescRutaSali_m," +
+            "NumeVuelSali_m,EstaSali_m from salida_m where CodiVehiSali_m = '"+id_bus+"' AND HoraLLegProgSali_m  " +
+            "between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59'"
         console.log(string_query)
         conn.query(string_query,function(error,results,fields)
         {
@@ -138,8 +140,8 @@ let query_salidas_unidad_fechas_global = (code,id_bus,fechaI,fechaF,callback)=>
                     //console.log(obj)
 
 
-                    let fechaLleg = getFecha_format(results[i].HoraLlegProgSali_m)
-                    let fechaSali = getFecha_format(results[i].HoraSaliProgSali_m)
+                    let fechaLleg = getHora(results[i].HoraLlegProgSali_m)
+                    let fechaSali = getHora(results[i].HoraSaliProgSali_m)
 
                     var obj =
                         {
@@ -148,7 +150,8 @@ let query_salidas_unidad_fechas_global = (code,id_bus,fechaI,fechaF,callback)=>
                             id_salida:results[i].idSali_m,
                             num_tarjeta_salida:results[i].NumeTarjSali_m,
                             frecuencia:results[i].DescRutaSali_m,
-                            num_vuelta:results[i].NumeVuelSali_m
+                            num_vuelta:results[i].NumeVuelSali_m,
+                            estado:results[i].EstaSali_m,
 
                         }
 

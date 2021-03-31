@@ -2,11 +2,16 @@ let getFecha_format = (fecha)=>
 {
 
 
+
     var new_fecha = new Date(fecha)
 
 
-    var dia = new_fecha.getDay();
-    var mes = new_fecha.getMonth();
+    var dia = new_fecha.getDate();
+
+    var mes = new_fecha.getUTCMonth();
+
+    mes =mes +1;
+
     var min = new_fecha.getMinutes()
     var hour = new_fecha.getHours()
     var seg = new_fecha.getSeconds()
@@ -69,10 +74,15 @@ let getHora = (fecha)=>
 
 let getFecha_dd_mm_yyyy = (fecha)=>
 {
-    var fecha_ = new Date(fecha);
 
-    var dia = fecha_.getDay();
-    var mes = fecha_.getMonth();
+    var fecha_ = new Date(fecha)
+
+
+    var dia = fecha_.getDate();
+
+    var mes = fecha_.getUTCMonth();
+
+    mes =mes +1;
 
     if(dia<10)
     {
