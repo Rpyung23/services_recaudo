@@ -1,16 +1,20 @@
+process.env.TZ = 'America/Guayaquil';
+
+//const moment_locate = require("../libs/moment_timezone")
+
+const moment = require("../libs/moment_timezone")
+
 let getFecha_format = (fecha)=>
 {
-
-
 
     var new_fecha = new Date(fecha)
 
 
     var dia = new_fecha.getDate();
 
-    var mes = new_fecha.getUTCMonth();
+    var mes = new_fecha.getMonth();
 
-    mes =mes +1;
+    mes += 1
 
     var min = new_fecha.getMinutes()
     var hour = new_fecha.getHours()
@@ -41,9 +45,10 @@ let getFecha_format = (fecha)=>
     }
 
 
-    //console.log("ORIGINAL : "+fecha+" FORMAT "+new_fecha)
 
     return (new_fecha.getFullYear()+"-"+mes+"-"+dia+" "+hour+":"+min+":"+seg)
+
+    return moment_constr.subtract(10, 'days').calendar();
 }
 
 let getHora = (fecha)=>
@@ -80,7 +85,7 @@ let getFecha_dd_mm_yyyy = (fecha)=>
 
     var dia = fecha_.getDate();
 
-    var mes = fecha_.getUTCMonth();
+    var mes = fecha_.getMonth();
 
     mes =mes +1;
 
