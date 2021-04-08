@@ -108,9 +108,9 @@ app_express.get("/velocidad_total_all/:code/:velocidad/:fechaI/:fechaF",function
         }else if(datos.length<=0)
         {
 
-            res.status(300).json(
+            res.status(200).json(
                 {
-                    status_code:200,
+                    status_code:300,
                     datos:null
                 })
         }else

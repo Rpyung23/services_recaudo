@@ -168,9 +168,11 @@ let query_recorrido_bus = (code,id_bus,fecha,horaI,horaF,callback)=>
     })
 }
 
-let query_report_ant = (code,fecha_ini,fecha_fin,callback)=>
+let query_report_ant = (code,fecha_ini,fecha_fin,horaini,horafin,callback)=>
 {
 
+    let fechahoraI = fecha_ini+" "+horaini
+    let fechahoraF = fecha_fin+" "+horafin
     objConn(code).then((resolve)=>
     {
         let conn = resolve
@@ -181,7 +183,7 @@ let query_report_ant = (code,fecha_ini,fecha_fin,callback)=>
             "SM.CodiVehiSali_m = OBV.CodiVehiObseVehi LEFT JOIN observador as OB on " +
             "OB.CodiObse = OBV.CodiObseObseVehi LEFT join vehiculo as V on " +
             "V.CodiVehi = SM.CodiVehiSali_m and V.idEstaVehi = 1 and NumeSIMVehi is not null " +
-            "where HoraLLegProgSali_m between '"+fecha_ini+"' and '"+fecha_fin+"' order by CodiVehiSali_m"
+            "where HoraLLegProgSali_m between '"+fechahoraI+"' and '"+fechahoraF+"' order by CodiVehiSali_m"
 
         //console.log(string_query)
         conn.query(string_query,function(error,results,fields)
@@ -199,9 +201,9 @@ let query_report_ant = (code,fecha_ini,fecha_fin,callback)=>
                             codi_vehi :results[i].CodiVehiSali_m,
                             placa_vehi :results[i].PlacVehi,
                             propietario :results[i].AliaObse,
-                            ced:null,
-                            hora_lleg :getFecha_format(results[i].HoraLlegProgSali_m),
-                            hora_sali :getFecha_format(results[i].HoraSaliProgSali_m),
+                            ced:"S/N",
+                            hora_lleg :getHora(results[i].HoraLlegProgSali_m),
+                            hora_sali :getHora(results[i].HoraSaliProgSali_m),
                             ruta :results[i].DescRutaSali_m,
                             monto :results[i].MontInfrUnidSali_m,
                             vuelta:results[i].NumeVuelSali_m,
@@ -237,7 +239,7 @@ let query_report_tarjeta_unidad_all_sp = (code,fechaIni,fechaFin,callback)=>
             "SM.HoraSaliProgSali_m ,SD.DescCtrlSali_d ,SD.HoraProgSali_d,SD.HoraMarcSali_d," +
             "SD.FaltSali_d,SD.PenaCtrlSali_d from salida_m as SM left join " +
             "salida_d as SD on SM.idSali_m=SD.idSali_mSali_d where " +
-            "SM.HoraLLegProgSali_m between '"+fechaIni+"' and '"+fechaFin+"' " +
+            "SM.HoraLLegProgSali_m between '"+fechaIni+" 05:00:00' and '"+fechaFin+" 23:59:59' " +
             "and SM.EstaSali_m <>4 order by SM.CodiVehiSali_m"
         conn.query(string_query,function(error,results,fields)
         {
@@ -291,7 +293,7 @@ let query_report_tarjeta_unidad_all_cp = (code,fechaIni,fechaFin,callback)=>
             "SM.HoraSaliProgSali_m ,SD.DescCtrlSali_d,SD.HoraProgSali_d,SD.HoraMarcSali_d," +
             "SD.FaltSali_d,SD.PenaCtrlSali_d from salida_m as SM " +
             "left join salida_d as SD on SM.idSali_m=SD.idSali_mSali_d where SM.HoraLLegProgSali_m " +
-            "between '"+fechaIni+"' and '"+fechaFin+"' and SM.EstaSali_m <>4 and SD.FaltSali_d>0 " +
+            "between '"+fechaIni+" 05:00:00' and '"+fechaFin+" 23:59:59' and SM.EstaSali_m <>4 and SD.FaltSali_d>0 " +
             "order by SM.CodiVehiSali_m"
         conn.query(string_query,function(error,results,fields)
         {
@@ -348,7 +350,7 @@ let query_report_tarjeta_unidad_sp = (code,unidad,fechaIni,fechaFin,callback)=>
             "SM.HoraSaliProgSali_m ,SD.DescCtrlSali_d,SD.HoraProgSali_d,SD.HoraMarcSali_d," +
             "SD.FaltSali_d,SD.PenaCtrlSali_d from salida_m as SM left join salida_d " +
             "as SD on SM.idSali_m=SD.idSali_mSali_d where  SM.CodiVehiSali_m = "+unidad+" " +
-            "and SM.HoraLLegProgSali_m between '"+fechaIni+"' and '"+fechaFin+"' and " +
+            "and SM.HoraLLegProgSali_m between '"+fechaIni+" 05:00:00' and '"+fechaFin+" 23:59:59' and " +
             "SM.EstaSali_m <>4 order by SM.CodiVehiSali_m"
         conn.query(string_query,function(error,results,fields)
         {
@@ -403,7 +405,7 @@ let query_report_tarjeta_unidad_cp = (code,unidad,fechaIni,fechaFin,callback)=>
             "SM.HoraSaliProgSali_m ,SD.DescCtrlSali_d,SD.HoraProgSali_d,SD.HoraMarcSali_d," +
             "SD.FaltSali_d,SD.PenaCtrlSali_d from salida_m as SM left join salida_d " +
             "as SD on SM.idSali_m=SD.idSali_mSali_d where  SM.CodiVehiSali_m = "+unidad+" " +
-            "and SM.HoraLLegProgSali_m between '"+fechaIni+"' and '"+fechaFin+"' and " +
+            "and SM.HoraLLegProgSali_m between '"+fechaIni+" 05:00:00' and '"+fechaFin+" 23:59:59' and " +
             "SM.EstaSali_m <>4 and SD.FaltSali_d>0 order by SM.CodiVehiSali_m"
         conn.query(string_query,function(error,results,fields)
         {
@@ -456,7 +458,7 @@ let query_report_consilado_vueltas = (code,fechaI,fechaF,callback)=>
         var string_query = "select t1.CodiVehiSali_m,t1.idSali_m,t1.DescRutaSali_m,t1.NumeVuelSali_m,t1.HoraSaliProgSali_m," +
             "sum(t2.PenaCtrlSali_d) TotalPenalidad from salida_m t1 inner join salida_d t2 " +
             "on t1.idSali_m = t2.idSali_mSali_d where t1.HoraSaliProgSali_m " +
-            "between '"+fechaI+"' and '"+fechaF+"' and t1.EstaSali_m <> 4 " +
+            "between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59' and t1.EstaSali_m <> 4 " +
             "and t2.isCtrlRefeSali_d = 0 and t2.PenaCtrlSali_d > 0\n" +
             "group by t1.idSali_m,t1.CodiVehiSali_m,t1.NumeVuelSali_m " +
             "order by t1.CodiVehiSali_m,t1.NumeVuelSali_m"
@@ -815,11 +817,11 @@ let query_reporte_penalidad_segundo_all = (code,fechaI,fechaF,bandera,callback)=
                     {
                         if(obj.min!=null && obj.min!=null)
                         {
-                            vector[i] = obj
+                            vector.push(obj)
                         }
                     }else
                     {
-                        vector[i] = obj
+                        vector.push(obj)
                     }
                 }
                 conn.end()
@@ -839,6 +841,7 @@ let query_reporte_penalidad_segundo_all = (code,fechaI,fechaF,bandera,callback)=
 
 let query_reporte_penalidad_segundo_unidad = (code,unidad,fechaI,fechaF,bandera,callback)=>
 {
+
     objConn(code).then((resolve)=>
     {
         let conn = resolve
@@ -875,13 +878,15 @@ let query_reporte_penalidad_segundo_unidad = (code,unidad,fechaI,fechaF,bandera,
                         seg:getSeg_diferencia(results[i].HoraProgSali_d,results[i].HoraMarcSali_d)
                     }
 
-                    if(bandera==1)
+                    if(obj!=null)
                     {
-                        if(obj.min!=null && obj.seg!=null)
+                        if(bandera==1)
                         {
-                            vector[i] = obj
-                        }
-                    }else
+                            if(obj.min!=null && obj.seg!=null)
+                            {
+                                vector.push(obj)
+                            }
+                        }else
                         {
                             if(obj.min==null || obj.seg==null)
                             {
@@ -889,9 +894,11 @@ let query_reporte_penalidad_segundo_unidad = (code,unidad,fechaI,fechaF,bandera,
                                 obj.seg = null
                             }
 
-                            vector[i] = obj
+                            vector.push(obj)
                         }
+                    }
                 }
+
                 conn.end()
                 callback(null,vector)
             }

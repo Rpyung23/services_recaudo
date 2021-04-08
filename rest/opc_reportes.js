@@ -5,7 +5,7 @@ let {query_report_ant,query_report_tarjeta_unidad_all_sp,query_report_tarjeta_un
     ,query_report_consilado_vueltas,query_reporte_consolidado_por_minutos,
     query_reporte_penalidad_segundo_all,query_reporte_penalidad_segundo_unidad} = require("../mysql/querys")
 
-app_express.get("/ant/:code/:fechainicio/:fechafin",function(req,res)
+app_express.get("/ant/:code/:fechainicio/:fechafin/:horaini/:horafin",function(req,res)
 {
 
     var codigo = req.params.code
@@ -13,7 +13,10 @@ app_express.get("/ant/:code/:fechainicio/:fechafin",function(req,res)
     var fi = req.params.fechainicio
 
     var ff = req.params.fechafin
-    query_report_ant(codigo,fi, ff,(error,datos)=>
+    var hi = req.params.horaini
+    var hf = req.params.horafin
+
+    query_report_ant(codigo,fi, ff,hi,hf,(error,datos)=>
         {
             if(error)
             {
@@ -272,9 +275,9 @@ app_express.get("/consolidado_vuelta/:code/:fechainicio/:fechafin",function(req,
         }else if(datos.length<=0)
         {
 
-            res.status(300).json(
+            res.status(200).json(
                 {
-                    status_code:200,
+                    status_code:300,
                     datos:null
                 })
         }else

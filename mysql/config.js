@@ -41,6 +41,7 @@ let objConn = async(code)=>
             port:0
         }
 
+        /*** code es el codigo de activacion de firebase**/
     switch(code)
     {
         case 'uambatena1198':

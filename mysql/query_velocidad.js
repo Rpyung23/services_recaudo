@@ -110,7 +110,7 @@ let query_velocidad_total_all = (code,fechaI,fechaF,velocidad,callback)=>
         let conn = resolve
 
         var query_string = "select CodiVehiHistEven,FechHistEven FechaHistorial,FechHistEven HoraHistorial," +
-            "LatiHistEven,LongHistEven,RumbHistEven,VeloHistEven from historial_eventos where FechHistEven " +
+            "LatiHistEven,LongHistEven,RumbHistEven,VeloHistEven,idSali_mHistEven from historial_eventos where FechHistEven " +
             "between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59' and VeloHistEven >= "+velocidad+" " +
             "order by convert(CodiVehiHistEven, signed),FechHistEven Asc"
 
@@ -124,10 +124,21 @@ let query_velocidad_total_all = (code,fechaI,fechaF,velocidad,callback)=>
                 let vector = []
                 for(let i = 0;i<results.length;i++)
                 {
+
+                    var aux_tarjeta = results[i].idSali_mHistEven
+                    var tarjeta = 0;
+
+                    if(aux_tarjeta.length>0 && aux_tarjeta!=null)
+                    {
+                        tarjeta = parseInt(aux_tarjeta)
+                    }
+
+
                     var obj =
                         {
                             unidad:results[i].CodiVehiHistEven,
-                            fecha_hora:getFecha_format(results[i].FechaHistorial),
+                            hora:getHora(results[i].FechaHistorial),
+                            tarjeta:tarjeta,
                             lat:results[i].LatiHistEven,
                             lng:results[i].LongHistEven,
                             rumbo:results[i].RumbHistEven,
@@ -158,9 +169,11 @@ let query_velocidad_total_unidad = (code,unidad,fechaI,fechaF,velocidad,callback
         let conn = resolve
 
         var query_string = "select CodiVehiHistEven,FechHistEven FechaHistorial,FechHistEven HoraHistorial,LatiHistEven," +
-            "LongHistEven,RumbHistEven,VeloHistEven from historial_eventos where FechHistEven " +
+            "LongHistEven,RumbHistEven,VeloHistEven,idSali_mHistEven from historial_eventos where FechHistEven " +
             "between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59' and VeloHistEven >= "+velocidad+" " +
             "and CodiVehiHistEven="+unidad+" order by convert(CodiVehiHistEven, signed),FechHistEven Asc"
+
+        console.log(query_string)
 
         conn.query(query_string,function(error,results,fields)
         {
@@ -172,10 +185,19 @@ let query_velocidad_total_unidad = (code,unidad,fechaI,fechaF,velocidad,callback
                 let vector = []
                 for(let i = 0;i<results.length;i++)
                 {
+                    var aux_tarjeta = results[i].idSali_mHistEven
+                    var tarjeta = 0;
+
+                    if(aux_tarjeta.length>0 && aux_tarjeta!=null)
+                    {
+                        tarjeta = parseInt(aux_tarjeta)
+                    }
+
                     var obj =
                         {
                             unidad:results[i].CodiVehiHistEven,
-                            fecha_hora:getFecha_format(results[i].FechaHistorial),
+                            tarjeta:tarjeta,
+                            hora:getHora(results[i].FechaHistorial),
                             lat:results[i].LatiHistEven,
                             lng:results[i].LongHistEven,
                             rumbo:results[i].RumbHistEven,

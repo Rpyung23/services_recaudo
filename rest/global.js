@@ -1,6 +1,6 @@
 /**API REST QUE SE REPITEN **/
 
-
+let {verify_token} = require("../jwt/jwt")
 let express = require("express")
 let app_express = express()
 
@@ -12,25 +12,42 @@ let {query_all_unidades,query_salidas_unidad_fechas_global,
 /**Metodo get**/
 
 /** Obtiene todas las unidades **/
-app_express.get("/unidades/:codigo",function (req,res)
+app_express.get("/unidades/:token",function (req,res)
 {
 
-    query_all_unidades( req.params.codigo,(error,datos)=>
-    {
-        if(error)
-        {
+    var obj = {
+        token:req.params.token
+    }
+
+    verify_token(obj.token,(bandera,codigo_msm)=>{
+        if(bandera == 0){
+
             res.status(200).json({
-                status_code:400,
-                datos:error.sqlMessage
+                status_code:500,
+                datos:codigo_msm
             })
-        }else
-        {
-            res.status(200).json({
-                status_code:200,
-                datos:datos
+
+        }else{
+            query_all_unidades( codigo_msm,(error,datos)=>
+            {
+                if(error)
+                {
+                    res.status(200).json({
+                        status_code:400,
+                        datos:error.sqlMessage
+                    })
+                }else
+                {
+                    res.status(200).json({
+                        status_code:200,
+                        datos:datos
+                    })
+                }
             })
         }
     })
+
+
 
 
 })

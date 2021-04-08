@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "vigitrack-empresas",
+  "private_key_id": "86e5bfc5409b42981b64683c986935836c3869c6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC2ZlnxEcZOkJuz\nCWBQlbCFFjUxF7NR7qQQWK028IfE7wybnkcM2HFVXlgmVQQmCF5azFmvFICRJTZ2\nW/GE5Ro38TH25fju1ZQ5COupkW8stP9BlsIR5bg+MPOYaDf6pBwIINUlnZTOO8X1\nXUg2M2qhfwfYegl1gtUkmt0PJE1mYb0+tuMpbY5dSGbKtuNazUGOc9WKslV1ldr+\nGkbWAYmj54kHmAm6XumELzdHM22hLhABEZT9V8L2wWcRiHTtcFGhoicIpQOePyI/\nONJ3O5nWBnDKk7IzgIpT+tAuw1ONj1LKrLyt69zLURxsqrp3XuEh8KPb2zT5YujW\nPWj8OJPHAgMBAAECggEAVXYGTTvRSQ1bTlslzAwezXSWzp42sDxalage3H99dam1\npBJYYu3kyCVwsuEhlPpVz0AxAyXdiWRArNsugeBgVPbHPNIKvUjH7qM929DfILjb\nYm1TF9Sk60q/T9kA5YhP9AUCKWI4jxqViX2/8FlN7EYbNHQVi4AWAtUmn0oYk8+L\n6zYdixYglxpY+Uwa36xI5nQWVbvCOHvsI1blR8TB87Cex9q+FsoCcSdsj6yU+TN3\nBUX/VM/xeIGI3fB2LU4uO9ODOeAQfbrE00axch63fzTLC2WJRng0o1XaTL97OyDw\ng2JRAQKxrZ/eQ9NmMtYuduDHLjl1t0kwRlxEbZ8SHQKBgQDky61FIqjR+NqZwIrz\nvX7pKWjNM5Uy1U3deVWoeB4jskArV4rB0dULqCXupjTqTMqYmI8tbs3WYF84C4FL\niibuooMVmve+vJahPKFXMr8XefafqsRW4XkLqRzJWXinQalLx103cP3Szwp5Jrpp\nLi/uHSSRRfBht08ylNdFUNJH7QKBgQDMFm4PLs0kbYInsv7Cs2TCOgp8/0l0gpNG\ny2LkLv4KmrCg7QDjb00VdjWUnqq+7J9kE7FbjIb6le7r7Xf25ZHyiv02CpF/6L0D\nM0aE4sRedg3bCQ2w5k+vF7HBkHvurt2Y9j1YxAd7YOLsjtYI8ZvAwBTkQLMSckLv\ntI689FksAwKBgBzvJRp5J6BmOD75epkYfdQ+yGIrA9NJ5m77yTlk92rMQBE7IPEh\n+C9hNGrZ2hdHXtetc23rdVyHE4Oi8Nb8wa+sHae90Vbtwp7hbAX7BO+THP1UO0BB\ng21WFa3hAsEkLKTIsaExSOhABrMLksd6b9VNGjLFBYFWDU34RMEfV3iBAoGBAKw5\nbW1AmHtaMlDgG18g1jGVm046fLlmi3RdpDldcqJuQgm7l1lWjp1C4Rpm/z4ZHrTs\nbWoNX8bNig7smaTvvEcKhX36Uyi2tfKibassVnxEcZLaxAP5h1sBys7G597XEEfJ\n3KEw5AN5EmaAbxyjD0YMklTASJ2TcOsp2p6YMTwTAoGBAOLjn3XUaM02xYH4g8Ub\nU5x1Eq01XN0959qQ+Hps/rOW2i//p0WxXZc868KWcCMOcxLqokfGyj9iYDuJ8JiT\nPXTId6a+BKEmFLcDIMFtCRroTBsmOqLdTpXDw+Jbh8LB9NIbZf5Jv6DB+d8JWY6F\nIaG9wmwoIFYLIFYUZhiApDfF\n-----END PRIVATE KEY-----\n",
+  "client_email": "vigitrack-empresas@appspot.gserviceaccount.com",
+  "client_id": "117903989848816570857",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/vigitrack-empresas%40appspot.gserviceaccount.com"
+}
