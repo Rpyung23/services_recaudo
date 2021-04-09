@@ -914,8 +914,200 @@ let query_reporte_penalidad_segundo_unidad = (code,unidad,fechaI,fechaF,bandera,
     })
 }
 
+/********************************** TARJETAS CONTROLES ***********************************************/
+
+let query_tarjetas_controles_sp = (code,fechaI,fechaF,unidad,callback)=>{
+    objConn(code).then((resolve)=>
+    {
+        let conn = resolve
+        var query_string = ""
+        if(unidad == "*"){
+            query_string = "select t1.idSali_m,t1.CodiVehiSali_m,t1.DescRutaSali_m,t1.NumeVuelSali_m," +
+                "t1.HoraSaliProgSali_m,t2.CodiCtrlSali_d,t2.DescCtrlSali_d,t2.HoraProgSali_d," +
+                "t2.HoraMarcSali_d,t2.FaltSali_d,t2.PenaXDiaCtrlSali_d,t2.isCtrlRefeSali_d," +
+                "t2.PenaCtrlSali_d from salida_m t1 inner join salida_d t2 on t1.idSali_m = t2.idSali_mSali_d " +
+                "inner join registro_control t3 on t2.CodiCtrlSali_d = t3.CodiCtrl where t1.EstaSali_m <> 4 " +
+                "and t2.FaltSali_d > 0 and t1.HoraSaliProgSali_m between '"+fechaI+" 05:00:00' " +
+                "and '"+fechaF+" 23:59:59' order by t1.CodiVehiSali_m,t1.idSali_m," +
+                "t1.HoraSaliProgSali_m,t2.HoraProgSali_d"
+        }else{
+            query_string = "select t1.idSali_m,t1.CodiVehiSali_m,t1.DescRutaSali_m,t1.NumeVuelSali_m," +
+                "t1.HoraSaliProgSali_m,t2.CodiCtrlSali_d,t2.DescCtrlSali_d,t2.HoraProgSali_d," +
+                "t2.HoraMarcSali_d,t2.FaltSali_d,t2.PenaXDiaCtrlSali_d,t2.isCtrlRefeSali_d," +
+                "t2.PenaCtrlSali_d from salida_m t1 inner join salida_d t2 on " +
+                "t1.idSali_m = t2.idSali_mSali_d inner join registro_control t3 on " +
+                "t2.CodiCtrlSali_d = t3.CodiCtrl where t1.EstaSali_m <> 4 and t2.FaltSali_d > 0 " +
+                "and t1.HoraSaliProgSali_m between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59' " +
+                "and t1.CodiVehiSali_m = '"+unidad+"' order by t1.CodiVehiSali_m, " +
+                "t1.idSali_m,t1.HoraSaliProgSali_m,t2.HoraProgSali_d"
+        }
+
+        conn.query(query_string,function(error,results,fields)
+        {
+            if(error)
+            {
+                callback(error,null)
+            }else
+            {
+                let vector = []
+                for(let i = 0;i<results.length;i++)
+                {
+                    var obj = {
+                        salida:results[i].idSali_m,
+                        vehiculo:results[i].CodiVehiSali_m,
+                        ruta_detalle:results[i].DescRutaSali_m,
+                        num_vuelta:results[i].NumeVuelSali_m,
+                        horaSali:getFecha_dd_mm_yyyy(results[i].HoraSaliProgSali_m),
+                        code_control:results[i].CodiCtrlSali_d,
+                        control_detalle:results[i].DescCtrlSali_d,
+                        hora_prog_sali:getHora(results[i].HoraProgSali_d),
+                        hora_marc_sali:getHora(results[i].HoraMarcSali_d),
+                        falta:results[i].FaltSali_d,
+                        pena_x_dia:results[i].PenaXDiaCtrlSali_d,
+                        referencia:results[i].isCtrlRefeSali_d,
+                        penalidad:results[i].PenaCtrlSali_d
+                    }
+                    vector.push(obj)
+                }
+
+                conn.end()
+                callback(null,vector)
+            }
+        })
 
 
+    }).catch(()=>
+    {
+        callback({
+            sqlMessage:'Error en query Conn Dinamica'
+        },null)
+        console.log('Error CONN BD')
+    })
+}
+
+
+let query_tarjetas_controles_all = (code,fechaI,fechaF,unidad,callback)=>{
+    objConn(code).then((resolve)=>
+    {
+        let conn = resolve
+        var query_string = ""
+        if(unidad == "*"){
+            query_string = "select t1.idSali_m,t1.CodiVehiSali_m,t1.DescRutaSali_m,t1.NumeVuelSali_m,t1.HoraSaliProgSali_m," +
+                "t2.CodiCtrlSali_d,t2.DescCtrlSali_d,t2.HoraProgSali_d,t2.HoraMarcSali_d,t2.FaltSali_d," +
+                "t2.PenaXDiaCtrlSali_d,t2.isCtrlRefeSali_d,t2.PenaCtrlSali_d  from salida_m t1 inner join " +
+                "salida_d t2 on t1.idSali_m = t2.idSali_mSali_d inner join registro_control t3 on " +
+                "t2.CodiCtrlSali_d = t3.CodiCtrl where t1.EstaSali_m <> 4 and t1.HoraSaliProgSali_m " +
+                "between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59' order by t1.CodiVehiSali_m,t1.idSali_m," +
+                "t1.HoraSaliProgSali_m,t2.HoraProgSali_d"
+        }else{
+            query_string = "select t1.idSali_m,t1.CodiVehiSali_m,t1.DescRutaSali_m,t1.NumeVuelSali_m,t1.HoraSaliProgSali_m," +
+                "t2.CodiCtrlSali_d,t2.DescCtrlSali_d,t2.HoraProgSali_d,t2.HoraMarcSali_d,t2.FaltSali_d," +
+                "t2.PenaXDiaCtrlSali_d,t2.isCtrlRefeSali_d,t2.PenaCtrlSali_d  from salida_m t1 inner join " +
+                "salida_d t2 on t1.idSali_m = t2.idSali_mSali_d inner join registro_control t3 on " +
+                "t2.CodiCtrlSali_d = t3.CodiCtrl where t1.EstaSali_m <> 4 and t1.HoraSaliProgSali_m " +
+                "between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59' and " +
+                "t1.CodiVehiSali_m = '"+unidad+"' order by " +
+                "t1.CodiVehiSali_m,t1.idSali_m,t1.HoraSaliProgSali_m,t2.HoraProgSali_d"
+        }
+
+        conn.query(query_string,function(error,results,fields)
+        {
+            if(error)
+            {
+                callback(error,null)
+            }else
+            {
+                let vector = []
+                for(let i = 0;i<results.length;i++)
+                {
+                    var obj = {
+                        salida:results[i].idSali_m,
+                        vehiculo:results[i].CodiVehiSali_m,
+                        ruta_detalle:results[i].DescRutaSali_m,
+                        num_vuelta:results[i].NumeVuelSali_m,
+                        horaSali:getFecha_dd_mm_yyyy(results[i].HoraSaliProgSali_m),
+                        code_control:results[i].CodiCtrlSali_d,
+                        control_detalle:results[i].DescCtrlSali_d,
+                        hora_prog_sali:getHora(results[i].HoraProgSali_d),
+                        hora_marc_sali:getHora(results[i].HoraMarcSali_d),
+                        falta:results[i].FaltSali_d,
+                        pena_x_dia:results[i].PenaXDiaCtrlSali_d,
+                        referencia:results[i].isCtrlRefeSali_d,
+                        penalidad:results[i].PenaCtrlSali_d
+                    }
+                    vector.push(obj)
+                }
+
+                conn.end()
+                callback(null,vector)
+            }
+        })
+
+
+    }).catch(()=>
+    {
+        callback({
+            sqlMessage:'Error en query Conn Dinamica'
+        },null)
+        console.log('Error CONN BD')
+    })
+}
+
+
+/*********************************** IMPRIMIR RECIBO **********************************************/
+
+let query_imprimir_recibo = (code,unidad,callback)=>
+{
+    objConn(code).then((resolve)=>
+    {
+        let conn = resolve
+        var query_string = ""
+
+        if(unidad == "*"){
+            query_string = "select t1.NumeDocuCobr,t1.CodiVehiSali_m,t1.FechCobr,t1.FechPago," +
+                "t1.ValoCobr,t2.NombApellUsua from cobro_m t1 inner join usuarios t2 " +
+                "on t1.CodiUsuaCobr = t2.CodiUsua"
+        }else{
+            query_string = "select t1.NumeDocuCobr,t1.CodiVehiSali_m,t1.FechCobr,t1.FechPago," +
+                "t1.ValoCobr,t2.NombApellUsua from cobro_m t1 inner join usuarios t2 on " +
+                "t1.CodiUsuaCobr = t2.CodiUsua where CodiVehiSali_m = '"+unidad+"'"
+        }
+
+        conn.query(query_string,function(error,results,fields)
+        {
+            if(error)
+            {
+                callback(error,null)
+            }else
+            {
+                let vector = []
+                for(let i = 0;i<results.length;i++)
+                {
+                    var obj = {
+                        recibo:results[i].NumeDocuCobr,
+                        vehiculo:results[i].CodiVehiSali_m,
+                        fecha_cobro:results[i].FechCobr,
+                        fecha_pago:results[i].FechPago,
+                        cobro:results[i].ValoCobr,
+                        user:results[i].NombApellUsua
+                    }
+                    vector.push(obj)
+                }
+
+                conn.end()
+                callback(null,vector)
+            }
+        })
+
+
+    }).catch(()=>
+    {
+        callback({
+            sqlMessage:'Error en query Conn Dinamica'
+        },null)
+        console.log('Error CONN BD')
+    })
+}
 module.exports = {query_salidas_unidad_fechas_horas
     ,query_tarjeta_salida_d,query_recorrido_bus,query_report_ant
     ,query_report_tarjeta_unidad_all_sp,query_report_tarjeta_unidad_all_cp
@@ -923,5 +1115,7 @@ module.exports = {query_salidas_unidad_fechas_horas
     ,query_report_consilado_vueltas,query_unidades_conteo_marcaciones_tabla,
     query_unidades_conteo_marcaciones_pdf,query_tarjetas_trabajadas_all
     ,query_tarjetas_trabajadas_unidad,query_reporte_consolidado_por_minutos,
-    query_reporte_penalidad_segundo_all,query_reporte_penalidad_segundo_unidad}
+    query_reporte_penalidad_segundo_all,query_reporte_penalidad_segundo_unidad,
+    query_tarjetas_controles_sp,query_tarjetas_controles_all,
+    query_imprimir_recibo}
 

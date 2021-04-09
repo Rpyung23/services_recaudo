@@ -51,7 +51,19 @@ let objConn = async(code)=>
             objC.database = 'uambatena';
             objC.port = 3306
             break;
-        case 'consorcio2596':
+        case 'rircay1196':
+            objC.host = '71.6.142.116';
+            objC.user = 'root';
+            objC.password = 'Urbano1972102030*';
+            objC.database = 'crircay';
+            objC.port = 3306
+            break;
+        case '28septiembre':
+            objC.host = '71.6.142.111';
+            objC.user = 'root';
+            objC.password = 'Vigitrack102030*';
+            objC.database = '28septiembre';
+            objC.port = 3306
             break;
     }
 
