@@ -1,3 +1,4 @@
+let {verify_token} = require("../jwt/jwt")
 let express = require("express")
 let app_express = express();
 let {query_report_ant,query_report_tarjeta_unidad_all_sp,query_report_tarjeta_unidad_all_cp
@@ -5,10 +6,10 @@ let {query_report_ant,query_report_tarjeta_unidad_all_sp,query_report_tarjeta_un
     ,query_report_consilado_vueltas,query_reporte_consolidado_por_minutos,
     query_reporte_penalidad_segundo_all,query_reporte_penalidad_segundo_unidad} = require("../mysql/querys")
 
-app_express.get("/ant/:code/:fechainicio/:fechafin/:horaini/:horafin",function(req,res)
+app_express.post("/ant/:fechainicio/:fechafin/:horaini/:horafin",function(req,res)
 {
 
-    var codigo = req.params.code
+    var codigo = req.body.token
 
     var fi = req.params.fechainicio
 
@@ -16,16 +17,27 @@ app_express.get("/ant/:code/:fechainicio/:fechafin/:horaini/:horafin",function(r
     var hi = req.params.horaini
     var hf = req.params.horafin
 
-    query_report_ant(codigo,fi, ff,hi,hf,(error,datos)=>
-        {
-            if(error)
+
+    verify_token(codigo,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_report_ant(codigo_msm,fi, ff,hi,hf,(error,datos)=>
             {
-                res.status(200).json(
-                    {
-                        status_code:400,
-                        datos:error.sqlMessage
-                    })
-            }else if(datos.length<=0)
+                if(error)
+                {
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+                }else if(datos.length<=0)
                 {
                     res.status(200).json(
                         {
@@ -33,86 +45,117 @@ app_express.get("/ant/:code/:fechainicio/:fechafin/:horaini/:horafin",function(r
                             datos:null
                         })
                 }else
-                    {
-                        res.status(200).json(
-                            {
-                                status_code:200,
-                                datos:datos
-                            })}
+                {
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })}
+            })
         }
-        )
+    })
+
+
+
 })
 
-app_express.get("/tarjeta_unidad_all_sp/:code/:fechainicio/:fechafin",function(req,res)
+app_express.post("/tarjeta_unidad_all_sp/:fechainicio/:fechafin",function(req,res)
 {
-    var codigo = req.params.code
+    var codigo = req.body.token
     var fechaI = req.params.fechainicio;
     var fechaF= req.params.fechafin;
 
-    query_report_tarjeta_unidad_all_sp(codigo,fechaI,fechaF,(error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json(
-                {
-                    status_code:400,
-                    datos:error.sqlMessage
-                })
-        }else if(datos.length <= 0)
-        {
-            res.status(200).json(
-                {
-                    status_code:300,
-                    datos:null
-                })
-        }else
+    verify_token(codigo,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_report_tarjeta_unidad_all_sp(codigo_msm,fechaI,fechaF,(error,datos)=>
             {
-                res.status(200).json(
-                    {
-                        status_code:200,
-                        datos:datos
-                    })
-            }
+                if(error)
+                {
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+                }else if(datos.length <= 0)
+                {
+                    res.status(200).json(
+                        {
+                            status_code:300,
+                            datos:null
+                        })
+                }else
+                {
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
+        }
     })
+
 })
 
-app_express.get("/tarjeta_unidad_all_cp/:code/:fechainicio/:fechafin",function(req,res)
+app_express.post("/tarjeta_unidad_all_cp/:fechainicio/:fechafin",function(req,res)
 {
-    var codigo = req.params.code
+    var codigo = req.body.token
     var fechaI = req.params.fechainicio;
     var fechaF= req.params.fechafin;
 
-    query_report_tarjeta_unidad_all_cp(codigo,fechaI,fechaF,(error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json(
+
+    verify_token(codigo,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_report_tarjeta_unidad_all_cp(codigo_msm,fechaI,fechaF,(error,datos)=>
+            {
+                if(error)
                 {
-                    status_code:400,
-                    datos:error.sqlMessage
-                })
-        }else if(datos.length <= 0)
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+                }else if(datos.length <= 0)
                 {
-                    status_code:300,
-                    datos:null
-                })
-        }else
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:300,
+                            datos:null
+                        })
+                }else
                 {
-                    status_code:200,
-                    datos:datos
-                })
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
         }
     })
+
 })
 
-app_express.get("/penalidad_segundos_all/:code/:fechaI/:fechaF/:bandera",function(req,res)
+app_express.post("/penalidad_segundos_all/:fechaI/:fechaF/:bandera",function(req,res)
 {
     var obj = {
-        code:req.params.code,
+        code:req.body.token,
         fechaI:req.params.fechaI,
         fechaF:req.params.fechaF,
         bandera:req.params.bandera
@@ -120,37 +163,52 @@ app_express.get("/penalidad_segundos_all/:code/:fechaI/:fechaF/:bandera",functio
 
     //code,fechaI,fechaF,bandera,callback
 
-    query_reporte_penalidad_segundo_all(obj.code,obj.fechaI,obj.fechaF,obj.bandera,(error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json(
+    verify_token(obj.code,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_reporte_penalidad_segundo_all(codigo_msm,obj.fechaI,obj.fechaF,obj.bandera,(error,datos)=>
+            {
+                if(error)
                 {
-                    status_code:400,
-                    datos:error.sqlMessage
-                })
-        }else if(datos.length <= 0)
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+                }else if(datos.length <= 0)
                 {
-                    status_code:300,
-                    datos:null
-                })
-        }else
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:300,
+                            datos:null
+                        })
+                }else
                 {
-                    status_code:200,
-                    datos:datos
-                })
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
         }
     })
+
+
+
 })
 
-app_express.get("/penalidad_segundos_unidad/:code/:unidad/:fechaI/:fechaF/:bandera",function(req,res)
+app_express.post("/penalidad_segundos_unidad/:unidad/:fechaI/:fechaF/:bandera",function(req,res)
 {
     var obj = {
-        code:req.params.code,
+        code:req.body.token,
         unidad:req.params.unidad,
         fechaI:req.params.fechaI,
         fechaF:req.params.fechaF,
@@ -159,172 +217,250 @@ app_express.get("/penalidad_segundos_unidad/:code/:unidad/:fechaI/:fechaF/:bande
 
     //code,unidad,fechaI,fechaF,bandera,callback
 
-    query_reporte_penalidad_segundo_unidad(obj.code,obj.unidad,obj.fechaI,obj.fechaF,obj.bandera,(error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json(
+    verify_token(obj.code,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_reporte_penalidad_segundo_unidad(codigo_msm,obj.unidad,obj.fechaI,obj.fechaF,obj.bandera,(error,datos)=>
+            {
+                if(error)
                 {
-                    status_code:400,
-                    datos:error.sqlMessage
-                })
-        }else if(datos.length <= 0)
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+                }else if(datos.length <= 0)
                 {
-                    status_code:300,
-                    datos:null
-                })
-        }else
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:300,
+                            datos:null
+                        })
+                }else
                 {
-                    status_code:200,
-                    datos:datos
-                })
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
         }
     })
+
+
+
 })
 
-app_express.get("/tarjeta_unidad_unidad_sp/:code/:unidad/:fechainicio/:fechafin",function(req,res)
+app_express.post("/tarjeta_unidad_unidad_sp/:unidad/:fechainicio/:fechafin",function(req,res)
 {
-    var codigo = req.params.code
+    var codigo = req.body.token
     var unidad = req.params.unidad
     var fechaI = req.params.fechainicio;
     var fechaF= req.params.fechafin;
 
-    query_report_tarjeta_unidad_sp(codigo,unidad,fechaI,fechaF,(error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json(
+
+    verify_token(codigo,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_report_tarjeta_unidad_sp(codigo_msm,unidad,fechaI,fechaF,(error,datos)=>
+            {
+                if(error)
                 {
-                    status_code:400,
-                    datos:error.sqlMessage
-                })
-        }else if(datos.length <= 0)
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+                }else if(datos.length <= 0)
                 {
-                    status_code:300,
-                    datos:null
-                })
-        }else
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:300,
+                            datos:null
+                        })
+                }else
                 {
-                    status_code:200,
-                    datos:datos
-                })
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
         }
     })
+
+
 })
 
-app_express.get("/tarjeta_unidad_unidad_cp/:code/:unidad/:fechainicio/:fechafin",function(req,res)
+app_express.post("/tarjeta_unidad_unidad_cp/:unidad/:fechainicio/:fechafin",function(req,res)
 {
-    var codigo = req.params.code
+    var codigo = req.body.token
     var unidad = req.params.unidad
     var fechaI = req.params.fechainicio;
     var fechaF= req.params.fechafin;
 
-    query_report_tarjeta_unidad_cp(codigo,unidad,fechaI,fechaF,(error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json(
+
+
+    verify_token(codigo,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_report_tarjeta_unidad_cp(codigo_msm,unidad,fechaI,fechaF,(error,datos)=>
+            {
+                if(error)
                 {
-                    status_code:400,
-                    datos:error.sqlMessage
-                })
-        }else if(datos.length <= 0)
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+                }else if(datos.length <= 0)
                 {
-                    status_code:300,
-                    datos:null
-                })
-        }else
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:300,
+                            datos:null
+                        })
+                }else
                 {
-                    status_code:200,
-                    datos:datos
-                })
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
         }
     })
+
+
 })
 
-app_express.get("/consolidado_vuelta/:code/:fechainicio/:fechafin",function(req,res)
+app_express.post("/consolidado_vuelta/:fechainicio/:fechafin",function(req,res)
 {
     var obj =
     {
-        codigo:req.params.code,
+        codigo:req.body.token,
         fecha_inicio:req.params.fechainicio,
         fecha_fin:req.params.fechafin
     }
-    query_report_consilado_vueltas(obj.codigo,obj.fecha_inicio, obj.fecha_fin,(error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json(
-                {
-                    status_code:400,
-                    datos:error.sqlMessage
-                })
 
-        }else if(datos.length<=0)
-        {
 
-            res.status(200).json(
-                {
-                    status_code:300,
-                    datos:null
-                })
-        }else
+    verify_token(obj.codigo,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_report_consilado_vueltas(codigo_msm,obj.fecha_inicio, obj.fecha_fin,(error,datos)=>
             {
-                res.status(200).json(
-                    {
-                        status_code:200,
-                        datos:datos
-                    })
-            }
+                if(error)
+                {
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+
+                }else if(datos.length<=0)
+                {
+
+                    res.status(200).json(
+                        {
+                            status_code:300,
+                            datos:null
+                        })
+                }else
+                {
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
+        }
     })
+
+
 })
 
-app_express.get("/consolidado_minutos/:code/:fecha",function(req,res)
+app_express.post("/consolidado_minutos/:fecha",function(req,res)
 {
     var obj =
         {
-            codigo:req.params.code,
+            codigo:req.body.token,
             fecha:req.params.fecha,
         }
-    query_reporte_consolidado_por_minutos(obj.codigo,obj.fecha,(error,datos)=>
-    {
-        if(error)
-        {
-            res.status(200).json(
-                {
-                    status_code:400,
-                    datos:error.sqlMessage
-                })
 
-        }else if(datos.length<=0)
-        {
 
-            res.status(300).json(
+    verify_token(obj.codigo,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_reporte_consolidado_por_minutos(codigo_msm,obj.fecha,(error,datos)=>
+            {
+                if(error)
                 {
-                    status_code:200,
-                    datos:null
-                })
-        }else
-        {
-            res.status(200).json(
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+
+                }else if(datos.length<=0)
                 {
-                    status_code:200,
-                    datos:datos
-                })
+
+                    res.status(300).json(
+                        {
+                            status_code:200,
+                            datos:null
+                        })
+                }else
+                {
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
         }
     })
+
+
 })
 
 module.exports = app_express
