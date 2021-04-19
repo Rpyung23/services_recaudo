@@ -51,6 +51,13 @@ let objConn = async(code)=>
             objC.database = 'uambatena';
             objC.port = 3306
             break;
+        case 'transisa0645':
+            objC.host = '71.6.142.111';
+            objC.user = 'root';
+            objC.password = 'Vigitrack102030*';
+            objC.database = 'transisa';
+            objC.port = 3306
+            break;
         case 'rircay1196':
             objC.host = '71.6.142.116';
             objC.user = 'root';
@@ -58,11 +65,42 @@ let objConn = async(code)=>
             objC.database = 'crircay';
             objC.port = 3306
             break;
+        case 'trunsa1152':
+            objC.host = '71.6.142.116';
+            objC.user = 'root';
+            objC.password = 'Urbano1972102030*';
+            objC.database = 'trunsa';
+            objC.port = 3306
+            break;
         case '28septiembre':
             objC.host = '71.6.142.111';
             objC.user = 'root';
             objC.password = 'Vigitrack102030*';
             objC.database = '28septiembre';
+            objC.port = 3306
+            break;
+
+        case 'consorcio2596':
+            objC.host = '71.6.142.111';
+            objC.user = 'root';
+            objC.password = 'Vigitrack102030*';
+            objC.database = 'consorcio-r';
+            objC.port = 3306
+            break;
+
+        case 'puruha1502':
+            objC.host = '71.6.142.116';
+            objC.user = 'root';
+            objC.password = 'Urbano1972102030*';
+            objC.database = 'puruha';
+            objC.port = 3306
+            break;
+
+        case 'pradoeco896':
+            objC.host = '71.6.142.116';
+            objC.user = 'root';
+            objC.password = 'Urbano1972102030*';
+            objC.database = 'prado-eco';
             objC.port = 3306
             break;
     }

@@ -27,6 +27,7 @@ let global = require("./rest/global")
 let opc_reportes = require("./rest/opc_reportes")
 let opc_velocidad = require("./rest/opc_velocidad")
 let login = require("./rest/login")
+let conteo = require("./rest/opc_conteo")
 
 
 /** MIDDLE **/
@@ -35,6 +36,7 @@ app_express.use(global)
 app_express.use(opc_reportes)
 app_express.use(opc_velocidad)
 app_express.use(login)
+app_express.use(conteo)
 
 //run el servidor
 app_express.listen(process.env.PORT,()=>
