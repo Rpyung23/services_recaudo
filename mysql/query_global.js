@@ -1,7 +1,7 @@
 /***************** GLOBAL **********************************/
 let mysql = require("mysql")
 let {objConn} = require("../mysql/config")
-let {getFecha_format,getHora} = require("../utils/utils")
+let {getFecha_format,getFecha_dd_mm_yyyy,getHora,getFechaActual} = require("../utils/utils")
 
 /*let objConn =
     {
@@ -277,6 +277,88 @@ let query_velocidad_maxima_global = (code,callback)=>
 
 }
 
+let query_fechaMinimaTajeta = (code,callback)=>
+{
+    objConn(code).then((resolve)=>
+    {
+        let conn = resolve
+
+        let string_query = "select min(FechCreaTarj) FechaMinimaPendiente from tarjeta_dm where EstaTarj = 1;"
+        //console.log(string_query)
+        conn.query(string_query,function(error,results,fields)
+        {
+            //console.log(`${results}`)
+            if(error)
+            {
+                callback(error,null)
+            }else
+            {
+                //let datos_salidas = null
+                var fechas_a = []
+                for(let i=0;i<results.length;i++)
+                {
+                    var fechas = {
+                        fechaI : (results[i].FechaMinimaPendiente != null ? getFecha_dd_mm_yyyy(results[i].FechaMinimaPendiente) : getFechaActual()),
+                        fechaF : getFechaActual()
+                    }
+                    fechas_a.push(fechas)
+                }
+                conn.end()
+                callback(null,fechas_a)
+            }
+        });
+
+
+    }).catch(()=>
+    {
+        callback({
+            sqlMessage:'Error en query Conn Dinamica'
+        },null)
+        console.log('Error CONN BD')
+    })
+}
+
+
+let query_subEmpresas = (code,callback)=>
+{
+    objConn(code).then((resolve)=>
+    {
+        let conn = resolve
+
+        let string_query = "select distinct descripcion,id as codigo from vehiculo_grupo order by descripcion Asc"
+        //console.log(string_query)
+        conn.query(string_query,function(error,results,fields)
+        {
+            //console.log(`${results}`)
+            if(error)
+            {
+                callback(error,null)
+            }else
+            {
+                //let datos_salidas = null
+                var datos = []
+                for(let i=0;i<results.length;i++)
+                {
+                    var companys = {
+                        company : results[i].descripcion
+                    }
+                    datos.push(companys)
+                }
+                conn.end()
+                callback(null,datos)
+            }
+        });
+
+
+    }).catch(()=>
+    {
+        callback({
+            sqlMessage:'Error en query Conn Dinamica'
+        },null)
+        console.log('Error CONN BD')
+    })
+}
+
 
 module.exports = {query_all_unidades,query_salidas_unidad_fechas_global,query_salidas_fechas_global
-    ,query_all_rutas_global,query_velocidad_maxima_global}
+    ,query_all_rutas_global,query_velocidad_maxima_global,query_fechaMinimaTajeta,query_subEmpresas}

@@ -32,6 +32,7 @@ let closeConnectionBD = (callback)=>
 let objConn = async(code)=>
 {
 
+    console.log(code)
     let objC =
         {
             host: null,
@@ -113,6 +114,7 @@ let objConn = async(code)=>
     {
         conn.connect(function(error)
         {
+            console.log(error)
             if(error)
             {
                 reject(error)

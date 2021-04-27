@@ -204,8 +204,6 @@ app_express.post('/conteo_marcaciones_pdf/:tarjeta',function (req,res)
 
 })
 
-
-
 /******************************* TARJETAS TRABAJADAS ***************************************/
 
 app_express.post("/tarjetas_trabajadas_all/:fechaI/:fechaF",function (req,res)
@@ -304,5 +302,6 @@ app_express.post("/tarjetas_trabajadas_unidad/:unidad/:fechaI/:fechaF",function 
     })
 
 })
+
 
 module.exports = app_express

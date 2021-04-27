@@ -5,7 +5,8 @@ let {query_report_ant,query_report_tarjeta_unidad_all_sp,query_report_tarjeta_un
     ,query_report_tarjeta_unidad_sp,query_report_tarjeta_unidad_cp
     ,query_report_consilado_vueltas,query_reporte_consolidado_por_minutos,
     query_reporte_penalidad_segundo_all,query_reporte_penalidad_segundo_unidad,
-    query_tarjetas_controles_sp,query_tarjetas_controles_all,query_imprimir_recibo} = require("../mysql/querys")
+    query_tarjetas_controles_sp,query_tarjetas_controles_all,query_imprimir_recibo
+    ,query_report_tarjeta_detallada,query_report_tarjeta_consolidada} = require("../mysql/querys")
 
 app_express.post("/ant/:fechainicio/:fechafin/:horaini/:horafin",function(req,res)
 {
@@ -619,5 +620,114 @@ app_express.post("/imprimir_recibo/:unidad",function(req,res)
         }
     })
 })
+
+
+
+/************************************* TARJETA DETALLADA ********************************************/
+
+app_express.post("/tarjeta_detallada/:fechaI/:fechaF",function(req,res)
+{
+
+    var obj =
+        {
+            codigo:req.body.token,
+            fechaI:req.params.fechaI,
+            fechaF:req.params.fechaF
+        }
+
+    verify_token(obj.codigo,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_report_tarjeta_detallada(codigo_msm,obj.fechaI,obj.fechaF,(error,datos)=>
+            {
+                if(error)
+                {
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+
+                }else if(datos.length<=0)
+                {
+
+                    res.status(300).json(
+                        {
+                            status_code:200,
+                            datos:null
+                        })
+                }else
+                {
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
+        }
+    })
+})
+
+/************************************* TARJETA CONSOLIDADA ********************************************/
+
+app_express.post("/tarjeta_consolidada/:fechaI/:fechaF",function(req,res)
+{
+
+    var obj =
+        {
+            codigo:req.body.token,
+            fechaI:req.params.fechaI,
+            fechaF:req.params.fechaF
+        }
+
+    verify_token(obj.codigo,(bandera,codigo_msm)=>{
+
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_report_tarjeta_consolidada(codigo_msm,obj.fechaI,obj.fechaF,(error,datos)=>
+            {
+                if(error)
+                {
+                    res.status(200).json(
+                        {
+                            status_code:400,
+                            datos:error.sqlMessage
+                        })
+
+                }else if(datos.length<=0)
+                {
+
+                    res.status(300).json(
+                        {
+                            status_code:200,
+                            datos:null
+                        })
+                }else
+                {
+                    res.status(200).json(
+                        {
+                            status_code:200,
+                            datos:datos
+                        })
+                }
+            })
+        }
+    })
+})
+
 
 module.exports = app_express

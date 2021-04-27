@@ -23,7 +23,8 @@ app_express.post("/login",function (req,res)
     }
 
 
-    validate_user_company(login.user,login.pass,login.child,(dato)=>{
+    validate_user_company(login.user,login.pass,login.child,(dato)=>
+    {
         res.status(200).json(dato)
     })
 

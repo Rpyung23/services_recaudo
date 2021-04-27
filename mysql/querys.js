@@ -916,7 +916,9 @@ let query_reporte_penalidad_segundo_unidad = (code,unidad,fechaI,fechaF,bandera,
 
 /********************************** TARJETAS CONTROLES ***********************************************/
 
-let query_tarjetas_controles_sp = (code,fechaI,fechaF,unidad,callback)=>{
+let query_tarjetas_controles_sp = (code,fechaI,fechaF,unidad,callback)=>
+{
+
     objConn(code).then((resolve)=>
     {
         let conn = resolve
@@ -942,6 +944,8 @@ let query_tarjetas_controles_sp = (code,fechaI,fechaF,unidad,callback)=>{
                 "t1.idSali_m,t1.HoraSaliProgSali_m,t2.HoraProgSali_d"
         }
 
+        console.log(query_string)
+
         conn.query(query_string,function(error,results,fields)
         {
             if(error)
@@ -961,7 +965,7 @@ let query_tarjetas_controles_sp = (code,fechaI,fechaF,unidad,callback)=>{
                         code_control:results[i].CodiCtrlSali_d,
                         control_detalle:results[i].DescCtrlSali_d,
                         hora_prog_sali:getHora(results[i].HoraProgSali_d),
-                        hora_marc_sali:getHora(results[i].HoraMarcSali_d),
+                        hora_marc_sali: results[i].HoraMarcSali_d != null ? getHora(results[i].HoraMarcSali_d) : "S/N",
                         falta:results[i].FaltSali_d,
                         pena_x_dia:results[i].PenaXDiaCtrlSali_d,
                         referencia:results[i].isCtrlRefeSali_d,
@@ -1009,7 +1013,7 @@ let query_tarjetas_controles_all = (code,fechaI,fechaF,unidad,callback)=>{
                 "t1.CodiVehiSali_m = '"+unidad+"' order by " +
                 "t1.CodiVehiSali_m,t1.idSali_m,t1.HoraSaliProgSali_m,t2.HoraProgSali_d"
         }
-
+        console.log(query_string)
         conn.query(query_string,function(error,results,fields)
         {
             if(error)
@@ -1029,7 +1033,7 @@ let query_tarjetas_controles_all = (code,fechaI,fechaF,unidad,callback)=>{
                         code_control:results[i].CodiCtrlSali_d,
                         control_detalle:results[i].DescCtrlSali_d,
                         hora_prog_sali:getHora(results[i].HoraProgSali_d),
-                        hora_marc_sali:getHora(results[i].HoraMarcSali_d),
+                        hora_marc_sali: results[i].HoraMarcSali_d != null ? getHora(results[i].HoraMarcSali_d) : "S/N",
                         falta:results[i].FaltSali_d,
                         pena_x_dia:results[i].PenaXDiaCtrlSali_d,
                         referencia:results[i].isCtrlRefeSali_d,
@@ -1108,6 +1112,114 @@ let query_imprimir_recibo = (code,unidad,callback)=>
         console.log('Error CONN BD')
     })
 }
+
+
+
+/************************************* TARJETA DETALLADA ********************************************/
+
+let query_report_tarjeta_detallada = (code,fechaI,fechaF,callback)=>
+{
+    objConn(code).then((resolve)=>
+    {
+        let conn = resolve
+
+        var script_query = "select t1.CodiVehiTarj,t1.FechCreaTarj,t1.NumeReciTarj,cast(t1.FechPAgoTarj AS CHAR) " +
+            "FechPAgoTarj,t1.PrecTarj,t3.descripcion,t1.EstaTarj from tarjeta_dm t1 inner join vehiculo t2 on " +
+            "t2.CodiVehi = t1.CodiVehiTarj left join vehiculo_grupo t3 on t3.id = t2.grupo_id where " +
+            "t1.FechCreaTarj between '"+fechaI+"' and '"+fechaF+"' order by t3.descripcion," +
+            "t1.CodiVehiTarj,t1.FechCreaTarj"
+
+        conn.query(script_query,function(error,results,fields)
+        {
+            if(error)
+            {
+                callback(error,null)
+            }else{
+                let datos = []
+                for(var i=0;i<results.length;i++)
+                {
+                    var obj = {
+                        vehiculo:results[i].CodiVehiTarj,
+                        fecha_creacion_tarjeta:results[i].FechCreaTarj == null ? "S/N" : getFecha_dd_mm_yyyy(results[i].FechCreaTarj),
+                        NumRecivo:results[i].NumeReciTarj == null ? "S/N" : results[i].NumeReciTarj,
+                        FechaPagoTarj:results[i].FechPAgoTarj == null ? "S/N" : getFecha_dd_mm_yyyy(results[i].FechPAgoTarj),
+                        PrecioTarj:parseFloat(results[i].PrecTarj).toFixed(2),
+                        Descrip:results[i].descripcion,
+                        EstaTarj:results[i].EstaTarj
+
+                    }
+
+                    datos.push(obj)
+                }
+
+                callback(null,datos)
+            }
+        })
+
+
+    }).catch(()=>{
+        callback({
+            sqlMessage:'Error en query Conn Dinamica'
+        },null)
+        console.log('Error CONN BD')
+    })
+}
+
+
+/************************************* TARJETA Consolidada ********************************************/
+
+let query_report_tarjeta_consolidada = (code,fechaI,fechaF,callback)=>
+{
+    objConn(code).then((resolve)=>
+    {
+        let conn = resolve
+
+        var script_query = "select t3.descripcion,t2.CodiVehi,count(t2.CodiVehi) numero," +
+            "sum(t1.PrecTarj) total,'Pendiente' concepto from tarjeta_dm t1 inner join vehiculo " +
+            "t2 on t2.CodiVehi = t1.CodiVehiTarj left join vehiculo_grupo t3 on " +
+            "t3.id = t2.grupo_id where t1.EstaTarj = 1 and t1.FechCreaTarj " +
+            "between '"+fechaI+"' and '"+fechaF+"' group by t3.descripcion," +
+            "t2.CodiVehi order by t3.descripcion,t2.CodiVehi"
+
+
+        conn.query(script_query,function(error,results,fields)
+        {
+            if(error)
+            {
+                callback(error,null)
+            }else{
+                let datos = []
+                for(var i=0;i<results.length;i++)
+                {
+                    var obj = {
+                        descrip:results[i].descripcion,
+                        vehiculo:results[i].CodiVehi,
+                        numero:results[i].numero,
+                        total:parseFloat(results[i].total).toFixed(2),
+                        concepto:results[i].concepto
+                    }
+
+                    datos.push(obj)
+                }
+
+                callback(null,datos)
+            }
+        })
+
+
+    }).catch(()=>{
+        callback({
+            sqlMessage:'Error en query Conn Dinamica'
+        },null)
+       // console.log('Error CONN BD')
+    })
+}
+
+
+
+
+
+
 module.exports = {query_salidas_unidad_fechas_horas
     ,query_tarjeta_salida_d,query_recorrido_bus,query_report_ant
     ,query_report_tarjeta_unidad_all_sp,query_report_tarjeta_unidad_all_cp
@@ -1117,5 +1229,5 @@ module.exports = {query_salidas_unidad_fechas_horas
     ,query_tarjetas_trabajadas_unidad,query_reporte_consolidado_por_minutos,
     query_reporte_penalidad_segundo_all,query_reporte_penalidad_segundo_unidad,
     query_tarjetas_controles_sp,query_tarjetas_controles_all,
-    query_imprimir_recibo}
+    query_imprimir_recibo,query_report_tarjeta_detallada,query_report_tarjeta_consolidada}
 

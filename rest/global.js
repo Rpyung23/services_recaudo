@@ -7,7 +7,8 @@ let app_express = express()
 
 let {query_all_unidades,query_salidas_unidad_fechas_global,
     query_salidas_fechas_global,query_all_rutas_global,
-    query_velocidad_maxima_global} = require("../mysql/query_global")
+    query_velocidad_maxima_global,query_fechaMinimaTajeta
+    ,query_subEmpresas} = require("../mysql/query_global")
 
 /**Metodo get**/
 
@@ -232,6 +233,82 @@ app_express.post("/velocidad",function(req,res)
                     })
                 }else
                 {
+                    res.status(200).json({
+                        status_code:200,
+                        datos:datos
+                    })
+                }
+            })
+        }
+    })
+
+
+})
+
+
+
+app_express.post("/fechaTarjetasMin",function(req,res)
+{
+    var objReq =
+        {
+            token:req.body.token,
+        }
+
+    verify_token(objReq.token,(bandera,codigo_msm)=>{
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_fechaMinimaTajeta(codigo_msm,(error,datos)=>
+            {
+                if(error)
+                {
+                    res.status(200).json({
+                        status_code:400,
+                        datos:error.sqlMessage
+                    })
+                }else {
+                    res.status(200).json({
+                        status_code:200,
+                        datos:datos
+                    })
+                }
+            })
+        }
+    })
+
+
+})
+
+app_express.post("/sub_companys",function(req,res)
+{
+    var objReq =
+        {
+            token:req.body.token,
+        }
+
+    verify_token(objReq.token,(bandera,codigo_msm)=>{
+        if(bandera == 0){
+
+            res.status(200).json({
+                status_code:500,
+                datos:codigo_msm
+            })
+
+        }else{
+            query_subEmpresas(codigo_msm,(error,datos)=>
+            {
+                if(error)
+                {
+                    res.status(200).json({
+                        status_code:400,
+                        datos:error.sqlMessage
+                    })
+                }else {
                     res.status(200).json({
                         status_code:200,
                         datos:datos
