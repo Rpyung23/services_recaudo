@@ -1,7 +1,8 @@
 let mysql = require("mysql")
 let {objConn} = require("../mysql/config")
+let base64 = require("js-base64")
 
-let {getFecha_format,getHora,getFecha_dd_mm_yyyy,getSeg_diferencia,getMin_diferencia} = require("../utils/utils")
+let {getFecha_format,getHora,getFecha_dd_mm_yyyy,getSeg_diferencia,getMin_diferencia,getFechaActual} = require("../utils/utils")
 
 function query_estados_pagos_script(bandera_script,fechaI,fechaF,company_or_unidad)
 {
@@ -105,8 +106,92 @@ let query_estados_pagos = (code,bandera_filtro,bandera_script,company_or_unidad,
     })
 }
 
-let query_pago_tarjeta = ()=>{
 
+/**
+ *
+ *  update tarjeta_dm set FechPAgoTarj=@FechPAgoTarj,EstaTarj=@EstaTarj,
+ *  CodiUsuaTarj=@CodiUsuaTarj,idPagoTarj=@idPagoTarj,
+ *  NumeReciTarj=@NumeReciTarj where idTarj=@idTarj
+ *
+ *
+ *  **/
+
+/**
+ *
+ * estado_tarjeta = 2
+ * codigo_user_tarj esta en base64
+ *
+ * */
+
+
+
+let query_pago_tarjeta_ = (code,codigo_user_tarj,idTarjeta,callback)=>
+{
+
+    objConn(code).then((resolve)=>
+    {
+        let conn = resolve
+
+        let fecha_now = getFechaActual()
+        var script_ = "update tarjeta_dm set FechPAgoTarj= '"+fecha_now+"',EstaTarj=2,CodiUsuaTarj='"+codigo_user_tarj+"',idPagoTarj=0,NumeReciTarj=(select max(NumeReciTarj) as num_tarjeta from tarjeta) where idTarj="+idTarjeta
+
+        console.log(script_)
+
+
+        conn.beginTransaction(function(err)
+        {
+            if (err)
+            {
+                callback({
+                    status_code:400,
+                    datos:error.sqlMessage
+                },null)
+
+            }else{
+
+                conn.query(script_, function (error, results, fields)
+                {
+                    if (error)
+                    {
+                        return conn.rollback(function()
+                        {
+                            callback({
+                                status_code:400,
+                                datos:error.sqlMessage
+                            },null)
+                        });
+
+                    }else{
+                        conn.commit(function(err)
+                        {
+                            if (err) {
+                                conn.rollback(function()
+                                {
+                                    callback({
+                                        status_code:400,
+                                        datos:error.sqlMessage
+                                    },null)
+                                });
+                            }else{
+                                conn.end()
+                                callback(null,{
+                                    status_code:200,
+                                    datos:"Cobro exitoso !"
+                                })
+                            }
+                        });
+                    }
+
+                });
+            }
+        });
+
+    }).catch((reject)=>{
+        callback({
+            status_code:400,
+            datos:"Error BD dinamica..."
+        },null)
+    })
 }
 
-module.exports = {query_estados_pagos}
+module.exports = {query_estados_pagos,query_pago_tarjeta_}

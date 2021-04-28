@@ -1,5 +1,6 @@
 let base_64 = require("js-base64")
 let {invalited_token} =  require("../jwt/jwt.js")
+let {validate_user_company_mysql} =  require("../mysql/query_login")
 let express = require("express")
 let app_express = express()
 
@@ -19,11 +20,16 @@ app_express.post("/login",function (req,res)
     var login = {
         user:req.body.user,
         pass:req.body.pass,
-        child:base_64.decode(req.body.child)
+        child:base_64.decode(req.body.child)/**codigo_activacion**/
     }
 
 
-    validate_user_company(login.user,login.pass,login.child,(dato)=>
+    /*validate_user_company(login.user,login.pass,login.child,(dato)=>
+    {
+        res.status(200).json(dato)
+    })*/
+
+    validate_user_company_mysql(login.user,login.pass,login.child,(dato)=>
     {
         res.status(200).json(dato)
     })

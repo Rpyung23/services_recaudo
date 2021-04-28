@@ -13,9 +13,9 @@ let payload = {
 
 const secret = "vigitrack2021-@-buhosm@rt-virtualcode07"
 
-let createJWT = (code)=>
+let createJWT = (datos)=>
 {
-    payload.code_act = code
+    payload.code_act = datos
 
     payload.iat =  Math.floor(Date.now()/1000)
     payload.exp = Math.floor(Date.now()/1000)+28800
