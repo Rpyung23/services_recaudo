@@ -51,7 +51,7 @@ let validate_user_company_mysql = (user,pass,code_act,callback)=>
                         datos.nombapellusua=Buffer.from(results[i].NombApellUsua).toString("base64")
                         //datos.clavusua=Buffer.from(results[i].ClavUsua).toString("base64")
                         datos.nombusua=Buffer.from(results[i].NombUsua).toString("base64")
-                        datos.nombemprclie=Buffer.from(results[i].NombEmprClie).toString("base64")
+                        datos.nombemprclie=results[i].NombEmprClie
                         datos.tarjtituclie=Buffer.from(results[i].TarjTituClie).toString("base64")
 
                     }

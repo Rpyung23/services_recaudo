@@ -1,4 +1,5 @@
 let express = require("express")
+let base64 = require("js-base64")
 let app = express()
 let {verify_token} = require("../jwt/jwt")
 let {query_estados_pagos,query_pago_tarjeta_} = require("../mysql/query_tarjetas")
@@ -60,7 +61,7 @@ app.post('/pago_tarjeta',function(req,res)
 {
     var obj = {
         token : req.body.token,
-        code_user_tarjeta:req.body.code_user_tarjeta,
+        code_user_tarjeta: base64.decode(req.body.code_user_tarjeta),
         idtarjeta:req.body.idtarjeta
     }
 

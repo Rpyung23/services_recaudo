@@ -172,8 +172,10 @@ let query_pago_tarjeta_ = (code,codigo_user_tarj,idTarjeta,callback)=>
                                         datos:error.sqlMessage
                                     },null)
                                 });
-                            }else{
+                            }
+                            else{
                                 conn.end()
+
                                 callback(null,{
                                     status_code:200,
                                     datos:"Cobro exitoso !"
