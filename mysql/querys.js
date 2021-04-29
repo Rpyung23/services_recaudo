@@ -132,10 +132,14 @@ let query_recorrido_bus = (code,id_bus,fecha,horaI,horaF,callback)=>
 
         var string_query = "select CodiVehiHistEven,FechHistEven,LatiHistEven,LongHistEven,RumbHistEven,VeloHistEven " +
             "from historial_eventos where FechHistEven between '"+fecha+" "+horaI+"' and '"+fecha+" "+horaF+"' and CodiVehiHistEven = '"+id_bus+"'"
+
+        console.log(string_query)
+
         conn.query(string_query,function(error,results,fields)
         {
             if(error)
             {
+                console.log(error)
                 callback(error,null)
             }else
             {
