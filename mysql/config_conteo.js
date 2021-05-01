@@ -18,6 +18,14 @@ let config_pre_and_post_consulta = (code)=>
             obj.puertas_habiles = 3
             break;
 
+        case 'latina1579':
+            obj.status = 200
+            obj.script_conteo = 1 /**Forma 1**/
+            obj.bandera_post_conteo = 1 /**Existe procesamiento despues de consulta**/
+            obj.post_procedimiento = 5 /**Forma 1 de procesar los datos**/
+            obj.puertas_habiles =3
+            break;
+
         case 'transisa0645':
             obj.status = 200
             obj.script_conteo = 1 /**Forma 1**/

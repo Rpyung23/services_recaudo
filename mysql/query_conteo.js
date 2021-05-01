@@ -378,10 +378,10 @@ function datos_procesados(objeto,codigo_procedimiento)
             console.log("Forma de procesamiento conteo 4")
             datos = forma_procedimiento_4(objectoA)
             break;
-        /*case 5:
+            case 5:
             console.log("Forma de procesamiento conteo 5")
             datos = forma_procedimiento_5(objeto)
-            break;*/
+            break;
     }
     //console.log(datos)
 
@@ -846,6 +846,7 @@ function forma_procedimiento_3(objeto)
     return datosVectContador
 
 }
+
 /*********************************************************************************************************/
 /**prado-eco **/
 function forma_procedimiento_4(objeto)
@@ -950,9 +951,179 @@ function forma_procedimiento_4(objeto)
 }
 /********************************************************************************************************/
 
+/**latina**/
 function forma_procedimiento_5(objeto)
 {
 
+
+    /**
+     *
+     *         $factSub2=$lectorAjustes['FactSub2'];
+     $bandera=$lectorAjustes['ApliAjus'];
+     $factSub3=$lectorAjustes['FactSub3'];
+     $factBaja1=$lectorAjustes['FactBaj1'];
+     $factAjus=$lectorAjustes['FactAjus'];
+     $aplibaja=$lectorAjustes['ApliBaja'];
+     $porcbaj2 = $lectorAjustes['PorcBaj2'];
+     $porcbaj3 = $lectorAjustes['PorcBaj3'];
+     *
+     * **/
+
+    /**
+     * obj.subida_1 = results[i].subida1
+     obj.subida_2 = results[i].subida2
+     obj.subida_3 = results[i].subida3
+     obj.bajada_1 = results[i].bajada1
+     obj.bajada_2 = results[i].bajada2
+     obj.bajada_3 = results[i].bajada3
+     *
+     * **/
+
+
+    let datosVectorResultConteo = []
+
+    for(var i=0;i<objeto.length;i++)
+    {
+        let puerta2BajadaValorAporte = 0
+        let puerta3BajadaValorAporte = 0
+
+        let valorfaltante = objeto[i].subida_1 - objeto[i].bajada_2 - objeto[i].bajada_3;
+
+        let valorconsiderar=objeto[i].subida_1-valorfaltante;
+
+        if(valorconsiderar!=0)
+        {
+            puerta2BajadaValorAporte=(objeto[i].bajada_2*100)/valorconsiderar;
+            puerta3BajadaValorAporte=(objeto[i].bajada_3*100)/valorconsiderar;
+        }
+
+        let puerta2BajadaValorAjuste=(valorfaltante*puerta2BajadaValorAporte)/100;
+        let puerta3BajadaValorAjuste=(valorfaltante*puerta3BajadaValorAporte)/100;
+
+        let ajusteValorTotalPuerta2Bajada=(puerta2BajadaValorAjuste+objeto[i].FactAjus)*objeto[i].FactAjus;
+        let ajusteValorTotalPuerta3Bajada=(puerta3BajadaValorAjuste+objeto[i].FactAjus)*objeto[i].FactAjus;
+
+        let sumConteoOriginalAjuste2=0.95*(puerta2BajadaValorAjuste);
+        let sumConteoOriginalAjuste3=0.95*(puerta3BajadaValorAjuste);
+
+        let puertaError1=objeto[i].bajada_2+sumConteoOriginalAjuste2;
+        let puertaError2=objeto[i].bajada_3+sumConteoOriginalAjuste3;
+
+        let error= objeto[i].subida_1-puertaError1-puertaError2;
+        let errorEnvio = 0
+
+        //console.log("1.1")
+        let eerr2 = 100-(error*100/objeto[i].subida_1);
+        var auxE = (100-(eerr2)).toFixed(2)
+        errorEnvio = Number(auxE);
+
+        if(errorEnvio<=0){
+            errorEnvio = 0
+        }
+
+        if(objeto[i].ApliAjus == 1)
+        {
+            console.log("1")
+
+            if(error>0)
+            {
+
+                if (objeto[i].ApliBaja==1)
+                {
+                    /*$arr =  array_map('utf8_encode', array('error'=>round($errorEnvio,2),'subida1' => $acuSubida1,
+                    'subida2' =>intval($acuSubida2*$factSub2),'subida3' => intval($acuSubida3*$factSub3),
+                    'bajada1' =>intval($acuBajada1*$factBaja1),'bajada2' =>
+                    intval(round(($acuSubida1*$porcbaj2)/100,0)),
+                        'bajada3' =>intval(round(($acuSubida1*$porcbaj3)/100,0))));*/
+
+                    var datos = {
+                        unidad:objeto[i].unidad,
+                        subida1:Math.round(objeto[i].subida_1),
+                        subida2:Math.round(objeto[i].subida_2*objeto[i].FactSub2),
+                        subida3:Math.round(objeto[i].subida_3*objeto[i].FactSub3),
+                        bajada1:Math.round(objeto[i].bajada_1*objeto[i].FactBaj1),
+                        bajada2:Math.round(objeto[i].subida_1+objeto[i].subida_2-objeto[i].bajada_1),
+                        bajada3:Math.round((objeto[i].bajada_3)),
+                        error:errorEnvio
+                    }
+
+                    datosVectorResultConteo.push(datos)
+
+                }else
+                {
+
+                    var datos = {
+                        unidad:objeto[i].unidad,
+                        subida1:Math.round(objeto[i].subida_1),
+                        subida2:Math.round(objeto[i].subida_2*objeto[i].FactSub2),
+                        subida3:Math.round(objeto[i].subida_3),
+                        bajada1:Math.round(objeto[i].bajada_1*objeto[i].FactBaj1),
+                        bajada2:Math.round(objeto[i].subida_2+objeto[i].subida_1-objeto[i].bajada_1),
+                        bajada3:Math.round(objeto[i].bajada_3),
+                        error:errorEnvio
+                    }
+
+                    datosVectorResultConteo.push(datos)
+                }
+            }else
+            {
+                console.log("1.2")
+                /*$errorEnvio=0;*/
+                if (objeto[i].ApliBaja==1)
+                {
+
+                    var datos = {
+                        unidad:objeto[i].unidad,
+                        subida1:Math.round(objeto[i].subida_1),
+                        subida2:Math.round(objeto[i].subida_2*objeto[i].FactSub2),
+                        subida3:Math.round(objeto[i].subida_3),
+                        bajada1:Math.round(objeto[i].bajada_1*objeto[i].FactBaj1),
+                        bajada2:Math.round((objeto[i].subida_1+objeto[i].subida_2-objeto[i].bajada_1)),
+                        bajada3:Math.round((objeto[i].subida_1)),
+                        error:errorEnvio
+                    }
+
+                    console.log("1.2 return 1")
+                    datosVectorResultConteo.push(datos)
+
+                }else
+                {
+
+                    var datos = {
+                        unidad:objeto[i].unidad,
+                        subida1:Math.round(objeto[i].subida_1),
+                        subida2:Math.round(objeto[i].subida_2*objeto[i].FactSub2),
+                        subida3:Math.round(objeto[i].subida_3),
+                        bajada1:Math.round(objeto[i].bajada_1*objeto[i].FactBaj1),
+                        bajada2:Math.round(objeto[i].subida_2+objeto[i].subida_1-objeto[i].bajada_1),
+                        bajada3:Math.round(objeto[i].bajada_3),
+                        error:errorEnvio
+                    }
+                    console.log("1.2 return 2")
+                    datosVectorResultConteo.push(datos)
+                }
+            }
+        }
+        else
+        {
+            console.log("2")
+
+            var datos = {
+                unidad:objeto[i].unidad,
+                subida1:objeto[i].subida_1,
+                subida2:objeto[i].subida_2,
+                subida3:objeto[i].subida_3,
+                bajada1:objeto[i].bajada_1,
+                bajada2:objeto[i].bajada_2,
+                bajada3:objeto[i].bajada_3,
+                error:errorEnvio
+            }
+
+            datosVectorResultConteo.push(datos)
+        }
+    }
+
+    return datosVectorResultConteo;
 
 }
 
@@ -993,7 +1164,7 @@ function format_puertas_hibilies(objeto,num_habiles)
             break;
     }
 
-    console.log(objA)
+    //console.log(objA)
     return objA
 }
 

@@ -43,6 +43,7 @@ let objConn = async(code)=>
         }
 
         /*** code es el codigo de activacion de firebase**/
+
     switch(code)
     {
         case 'uambatena1198':
@@ -102,6 +103,14 @@ let objConn = async(code)=>
             objC.user = 'root';
             objC.password = 'Urbano1972102030*';
             objC.database = 'prado-eco';
+            objC.port = 3306
+            break;
+
+        case 'latina1579':
+            objC.host = '71.6.142.111';
+            objC.user = 'root';
+            objC.password = 'Vigitrack102030*';
+            objC.database = 'latina';
             objC.port = 3306
             break;
     }
