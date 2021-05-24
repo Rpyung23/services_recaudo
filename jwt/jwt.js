@@ -21,17 +21,6 @@ let createJWT = (datos)=>
     payload.exp = Math.floor(Date.now()/1000)+28800
 
 
-    //jwt.sign(payload, secretOrPrivateKey, [options, callback])
-
-    /*jwt.sign(payload,secret,options,(error,token)=>
-    {
-        if(error){
-            callback(error.message,null)
-        }else{
-            callback(null,token)
-        }
-    })*/
-
     let token = "";
 
     try{

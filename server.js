@@ -43,5 +43,5 @@ app_express.use(opc_tarjetas)
 //run el servidor
 app_express.listen(process.env.PORT,()=>
 {
-    console.log(`Coneccion en el pueto ${process.env.PORT}`);
+    console.log(`Coneccion en el puerto ${process.env.PORT}`);
 })

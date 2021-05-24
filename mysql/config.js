@@ -1,38 +1,9 @@
 let mysql = require("mysql");
-/*let openConnectionBD = (callback) =>
+
+let objConn = (code)=>
 {
 
-    conn.connect(function(error)
-    {
-        if(error){
-            callback(false,error)
-        }else
-        {
-            console.log("CONNECTED AS ID "+conn.threadId)
 
-            callback(true)
-        }
-    });
-}
-
-let closeConnectionBD = (callback)=>
-{
-    conn.end(function(error){
-        if(error)
-        {
-            callback(false,error)
-        }else
-        {
-            callback(true,null)
-        }
-    });
-}
-*/
-
-let objConn = async(code)=>
-{
-
-    console.log(code)
     let objC =
         {
             host: null,
@@ -42,99 +13,52 @@ let objConn = async(code)=>
             port:0
         }
 
-        /*** code es el codigo de activacion de firebase**/
+        /*** code es el child -> bd_name **/
 
     switch(code)
     {
-        case 'uambatena1198':
-            objC.host = '71.6.142.111';
-            objC.user = 'root';
-            objC.password = 'Vigitrack102030*';
-            objC.database = 'uambatena';
-            objC.port = 3306
-            break;
-        case 'transisa0645':
-            objC.host = '71.6.142.111';
-            objC.user = 'root';
-            objC.password = 'Vigitrack102030*';
-            objC.database = 'transisa';
-            objC.port = 3306
-            break;
-        case 'rircay1196':
-            objC.host = '71.6.142.116';
-            objC.user = 'root';
-            objC.password = 'Urbano1972102030*';
-            objC.database = 'crircay';
-            objC.port = 3306
-            break;
-        case 'trunsa1152':
-            objC.host = '71.6.142.116';
-            objC.user = 'root';
-            objC.password = 'Urbano1972102030*';
-            objC.database = 'trunsa';
-            objC.port = 3306
-            break;
+        case 'uambatena':
+        case 'transisa':
         case '28septiembre':
+        case 'consorcio-r':
+        case 'latina':
             objC.host = '71.6.142.111';
             objC.user = 'root';
             objC.password = 'Vigitrack102030*';
-            objC.database = '28septiembre';
+            objC.database = code;
             objC.port = 3306
             break;
-
-        case 'consorcio2596':
-            objC.host = '71.6.142.111';
-            objC.user = 'root';
-            objC.password = 'Vigitrack102030*';
-            objC.database = 'consorcio-r';
-            objC.port = 3306
-            break;
-
-        case 'puruha1502':
+        case 'crircay':
+        case 'trunsa':
+        case 'puruha':
+        case 'prado-eco':
             objC.host = '71.6.142.116';
             objC.user = 'root';
             objC.password = 'Urbano1972102030*';
-            objC.database = 'puruha';
-            objC.port = 3306
-            break;
-
-        case 'pradoeco896':
-            objC.host = '71.6.142.116';
-            objC.user = 'root';
-            objC.password = 'Urbano1972102030*';
-            objC.database = 'prado-eco';
-            objC.port = 3306
-            break;
-
-        case 'latina1579':
-            objC.host = '71.6.142.111';
-            objC.user = 'root';
-            objC.password = 'Vigitrack102030*';
-            objC.database = 'latina';
+            objC.database = code;
             objC.port = 3306
             break;
     }
 
-    //console.log(objC)
-
+console.log(objC)
     let conn = mysql.createConnection(objC)
 
-    return new Promise(async(resolve,reject)=>
+    return new Promise((resolve,reject)=>
     {
         conn.connect(function(error)
         {
-            console.log(error)
+
             if(error)
             {
+                console.log("error connect BD: "+error)
                 reject(error)
             }else
                 {
+                    console.log("connect BD resolve ")
                     resolve(conn)
                 }
         });
     })
-
-
 
 }
 

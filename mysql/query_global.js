@@ -70,7 +70,8 @@ let query_all_unidades = (code,callback) =>
 
         if(conn!=null)
         {
-            conn.query("SELECT * from vehiculo as V where V.idEstaVehi = 1 and NumeSIMVehi is not null",function (error,results,fiels)
+            conn.query("SELECT V.CodiVehi,V.PlacVehi from vehiculo as V where V.idEstaVehi = 1 " +
+                "and NumeSIMVehi is not null order by V.CodiVehi ASC",function (error,results,fiels)
             {
                 if(error)
                 {
@@ -123,7 +124,7 @@ let query_salidas_unidad_fechas_global = (code,id_bus,fechaI,fechaF,callback)=>
 
         let string_query = "select idSali_m,NumeTarjSali_m,HoraLlegProgSali_m,HoraSaliProgSali_m,DescRutaSali_m," +
             "NumeVuelSali_m,EstaSali_m from salida_m where CodiVehiSali_m = '"+id_bus+"' AND HoraLLegProgSali_m  " +
-            "between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59'"
+            "between '"+fechaI+" 05:00:00' and '"+fechaF+" 23:59:59' order by HoraLlegProgSali_m"
         console.log(string_query)
         conn.query(string_query,function(error,results,fields)
         {

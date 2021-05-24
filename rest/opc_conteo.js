@@ -52,7 +52,6 @@ app.post("/conteo_general/:unidad/:fechaI/:fechaF",function(req,res)
 })
 
 
-
 app.post("/conteo_vueltas/:vuelta/:unidad",function(req,res)
 {
 
@@ -66,7 +65,9 @@ app.post("/conteo_vueltas/:vuelta/:unidad",function(req,res)
             })
 
         }else{
-            query_conteo_pasajeros_vuelta(codigo_msm,req.params.vuelta,req.params.unidad,(error,datos)=>
+
+            query_conteo_pasajeros_vuelta(codigo_msm,req.params.unidad
+                ,req.params.vuelta,(error,datos)=>
             {
                 if(error){
 
@@ -78,7 +79,7 @@ app.post("/conteo_vueltas/:vuelta/:unidad",function(req,res)
 
                 }else{
 
-                    if(datos.length>0 && datos[0].unidad!=null)
+                    if(datos.length>0)
                     {
                         res.status(200).json({
                             status_code:200,

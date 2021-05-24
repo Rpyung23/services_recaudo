@@ -19,7 +19,7 @@ let datos_login_select = (callback_datos)=>
         data.forEach((dato) => {
            //console.log(dato.key)
 
-            var code = dato.child("code").val()
+            var code = dato.child("bd_name").val()
 
             var obj = {
                 name : dato.child("name").val(),
@@ -29,6 +29,7 @@ let datos_login_select = (callback_datos)=>
             obj_vector.push(obj)
         })
 
+        console.log(obj_vector)
         callback_datos(obj_vector);
     })
 }

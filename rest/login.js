@@ -10,6 +10,7 @@ app_express.post("/companys",function (req,res)
 {
     datos_login_select((datos)=>
     {
+        console.log(datos)
         res.status(200).json(datos)
     })
 })
@@ -22,12 +23,6 @@ app_express.post("/login",function (req,res)
         pass:req.body.pass,
         child:base_64.decode(req.body.child)/**codigo_activacion**/
     }
-
-
-    /*validate_user_company(login.user,login.pass,login.child,(dato)=>
-    {
-        res.status(200).json(dato)
-    })*/
 
     validate_user_company_mysql(login.user,login.pass,login.child,(dato)=>
     {
