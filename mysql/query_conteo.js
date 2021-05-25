@@ -35,41 +35,76 @@ let query_conteo_pasajeros_general = (bd_name,fechaI,fechaF,unidad,callback) =>
                                 if (results[i-1].unidad != results[i].unidad)
                                 {
                                     var oConteo =  new cConteo();
+                                    var objContadorAjuste = new cContadorAjuste();
+
                                     oConteo.setUnidad(results[i].unidad)
+
+                                    if (getConteoPasajerosTipo(bd_name)==2)
+                                    {
+
+                                        objContadorAjuste.setApliAjus(results[i].ApliAjus)
+                                        objContadorAjuste.setFactAjus(results[i].FactAjus)
+                                        objContadorAjuste.setApliBaja(results[i].ApliBaja)
+                                        objContadorAjuste.setFactBaj1(results[i].FactBaj1)
+                                        objContadorAjuste.setFactSub3(results[i].FactSub3)
+                                        objContadorAjuste.setFactSub2(results[i].FactSub2)
+                                        objContadorAjuste.setPorcBaj2(results[i].PorcBaj2)
+                                        objContadorAjuste.setPorcBaj3(results[i].PorcBaj3)
+                                        oConteo.setOContadorAjuste(objContadorAjuste)
+                                    }
+
                                     objConteo.push(oConteo)
                                 }
                             }
                         }
 
-                        console.log(objConteo)
-
-
-/*
-                        if (getBanderaProceConteo(bd_name)==1)
+                        /**2.- sumar el conteo de subida y bajadas**/
+                        for(var j=0;j<objConteo.length;j++)
                         {
-                            objVuelta = getprocesoConteo(bd_name,objVuelta)
+                            for (var k=0;k<results.length;k++)
+                            {
+                                if (objConteo[j].getUnidad() == results[k].unidad)
+                                {
+                                    objConteo[j].setSubida1(objConteo[j].getSubida1()+results[k].subida1)
+                                    objConteo[j].setSubida2(objConteo[j].getSubida2()+results[k].subida2)
+                                    objConteo[j].setSubida3(objConteo[j].getSubida3()+results[k].subida3)
+                                    objConteo[j].setBajada1(objConteo[j].getBajada1()+results[k].bajada1)
+                                    objConteo[j].setBajada2(objConteo[j].getBajada2()+results[k].bajada2)
+                                    objConteo[j].setBajada3(objConteo[j].getBajada3()+results[k].bajada3)
+                                }
+                            }
                         }
 
-                        objVuelta = formatNumPuertasHabiles(objVuelta,bd_name)
+
+
+                        if (getBanderaProceConteo(bd_name)==1)
+                        {
+                            objConteo = getprocesoConteo(bd_name,objConteo)
+                        }
+
+                        objConteo = formatNumPuertasHabiles(objConteo,bd_name)
 
 
                         var conteoProcesado = []
 
-                        var json = {
-                            subida1:objVuelta[0].subida1,
-                            subida2:objVuelta[0].subida2,
-                            subida3:objVuelta[0].subida3,
-                            bajada1:objVuelta[0].bajada1,
-                            bajada2:objVuelta[0].bajada2,
-                            bajada3:objVuelta[0].bajada3,
-                            error:Number(parseFloat(objVuelta[0].getError()).toFixed(2))
+                        for (var i =0;i<objConteo.length;i++)
+                        {
+
+                            var json = {
+                                unidad:objConteo[i].getUnidad(),
+                                subida1:objConteo[i].getSubida1(),
+                                subida2:objConteo[i].getSubida2(),
+                                subida3:objConteo[i].getSubida3(),
+                                bajada1:objConteo[i].getBajada1(),
+                                bajada2:objConteo[i].getBajada2(),
+                                bajada3:objConteo[i].getBajada3(),
+                                error:Number(parseFloat(objConteo[i].getError()).toFixed(2))
+                            }
+                            console.log(json)
+                            conteoProcesado.push(json)
                         }
 
-                        conteoProcesado.push(json)
-
-
-*/
-                       // callback(null,conteoProcesado)
+                       callback(null,conteoProcesado)
                     }
                 })
 
