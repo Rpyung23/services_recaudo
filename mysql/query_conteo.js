@@ -50,6 +50,9 @@ let query_conteo_pasajeros_general = (bd_name,fechaI,fechaF,unidad,callback) =>
                                         objContadorAjuste.setFactSub2(results[i].FactSub2)
                                         objContadorAjuste.setPorcBaj2(results[i].PorcBaj2)
                                         objContadorAjuste.setPorcBaj3(results[i].PorcBaj3)
+                                        /** ApliIncr,PorcIncr **/
+                                        objContadorAjuste.setApliIncr(results[i].ApliIncr)
+                                        objContadorAjuste.setPorcIncr(results[i].PorcIncr)
                                         oConteo.setOContadorAjuste(objContadorAjuste)
                                     }
 
@@ -157,6 +160,9 @@ let query_conteo_pasajeros_vuelta = (bd_name,unidad,idVuelta,callback)=>
                         objContadorAjuste.setFactSub2(results[i].FactSub2)
                         objContadorAjuste.setPorcBaj2(results[i].PorcBaj2)
                         objContadorAjuste.setPorcBaj3(results[i].PorcBaj3)
+                        /** ApliIncr,PorcIncr **/
+                        objContadorAjuste.setApliIncr(results[i].ApliIncr)
+                        objContadorAjuste.setPorcIncr(results[i].PorcIncr)
                         obj.setOContadorAjuste(objContadorAjuste)
                     }
 
@@ -220,7 +226,7 @@ function script_conteo_all(valor,fechaI,fechaF)
             querys =  "SELECT recaudo_m.unidad as unidad,recaudo_d.subida1 as subida1,recaudo_d.subida2 as subida2,\n" +
                 "recaudo_d.subida3 as subida3,recaudo_d.bajada1 as bajada1," +
                 "recaudo_d.bajada2 as bajada2,recaudo_d.bajada3 as bajada3," +
-                "FactAjus,ApliAjus,FactBaj1,FactSub2,FactSub3,ApliBaja,PorcBaj2,PorcBaj3 " +
+                "FactAjus,ApliAjus,FactBaj1,FactSub2,FactSub3,ApliBaja,PorcBaj2,PorcBaj3,ApliIncr,PorcIncr " +
                 "FROM recaudo_m JOIN recaudo_d ON recaudo_d.recaudo_m_id = recaudo_m.id " +
                 "join contador_ajuste as CJ on CJ.CodiVehi = recaudo_m.unidad " +
                 "WHERE  recaudo_m.hora between '"+fechaI+"' " +
@@ -253,7 +259,7 @@ function script_conteo(valor,unidad,fechaI,fechaF)
                 ",recaudo_d.subida2 as subida2,\n" +
                 "recaudo_d.subida3 as subida3,recaudo_d.bajada1 as bajada1," +
                 "recaudo_d.bajada2 as bajada2,recaudo_d.bajada3 as bajada3," +
-                "FactAjus,ApliAjus,FactBaj1,FactSub2,FactSub3,ApliBaja,PorcBaj2,PorcBaj3 " +
+                "FactAjus,ApliAjus,FactBaj1,FactSub2,FactSub3,ApliBaja,PorcBaj2,PorcBaj3,ApliIncr,PorcIncr " +
                 "FROM recaudo_m JOIN recaudo_d ON recaudo_d.recaudo_m_id = recaudo_m.id " +
                 "join contador_ajuste as CJ on CJ.CodiVehi = '"+unidad+"' " +
                 "WHERE recaudo_m.unidad ='"+unidad+"' AND recaudo_m.hora between '"+fechaI+"' " +
@@ -284,7 +290,7 @@ function obtenerscriptVuelta(bandera,unidad,vuelta)
             script =  "SELECT recaudo_m.unidad as unidad,recaudo_d.subida1 as subida1,recaudo_d.subida2 as subida2,\n" +
                 "recaudo_d.subida3 as subida3,recaudo_d.bajada1 as bajada1," +
                 "recaudo_d.bajada2 as bajada2,recaudo_d.bajada3 as bajada3," +
-                "FactAjus,ApliAjus,FactBaj1,FactSub2,FactSub3,ApliBaja,PorcBaj2,PorcBaj3 " +
+                "FactAjus,ApliAjus,FactBaj1,FactSub2,FactSub3,ApliBaja,PorcBaj2,PorcBaj3,ApliIncr,PorcIncr " +
                 "FROM recaudo_m JOIN recaudo_d ON recaudo_d.recaudo_m_id = recaudo_m.id " +
                 "join contador_ajuste as CJ on CJ.CodiVehi = '"+unidad+"' " +
                 "WHERE recaudo_m.unidad ='"+unidad+"'  and recaudo_m.salida_m_id = "+vuelta+" group by unidad,hora order by unidad ASC"
@@ -497,7 +503,20 @@ function conteo_forma1(objConteo,bd_name)
         var aplibaja = objConteo[i].getOContadorAjuste().getApliBaja();
         var porcbaj2 = objConteo[i].getOContadorAjuste().getPorcBaj2();
         var porcbaj3 = objConteo[i].getOContadorAjuste().getPorcBaj3();
+
+        if (bd_name=="transisa"){
+            if(objConteo[i].getOContadorAjuste().getApliIncr()==1){
+
+                var tot = (objConteo[i].getSubida1() * (objConteo[i].getOContadorAjuste().getPorcIncr()/100))
+                    + objConteo[i].getSubida1()
+
+                objConteo[i].setSubida1(Math.round(tot))
+            }
+        }
+
+
         var acuSubida1 = objConteo[i].getSubida1();
+
         var acuBajada2 = objConteo[i].getBajada2();
         var acuBajada3 = objConteo[i].getBajada3();
         var acuSubida2 = objConteo[i].getSubida2();

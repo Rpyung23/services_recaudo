@@ -11,8 +11,22 @@ class cContadorAjuste
         this.ApliBaja=0
         this.PorcBaj2=0
         this.PorcBaj3=0
+        this.ApliIncr=0
+        this.PorcIncr=0
     }
 
+    getApliIncr(){
+        this.ApliIncr;
+    }
+    setApliIncr(valor){
+        this.ApliIncr = valor
+    }
+    getPorcIncr(){
+        this.PorcIncr;
+    }
+    setPorcIncr(valor){
+        this.PorcIncr = valor
+    }
     getFactAjus() {
         return this.FactAjus
     }
